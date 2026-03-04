@@ -1,0 +1,162 @@
+{
+  "url": "https://www.comp.nus.edu.sg/programmes/ug/bais/curr/",
+  "status": "ok",
+  "heading": "Summary of degree requirements for BComp (Business Artificial Intelligence Systems)",
+  "text_blocks": [
+    "Summary of degree requirements for BComp (Business Artificial Intelligence Systems) Courses Units Subtotals COMMON CURRICULUM REQUIREMENTS 1 40 University Level Requirements : 6 University Pillars 24 Digital Literacy — CS1010A Programming Methodology 4 Critique and Expression — GEX% 4 Cultures and Connections — GEC% 4 Data Literacy — BT1101 Introduction to Business Analytics 4 Singapore Studies — GES% 4 Communities and Engagement — GEN% 4 Computing Ethics 4 IS1108 Digital and AI Ethics 4 Interdisciplinary & Cross-Disciplinary Education Comprises of Interdisciplinary (ID) Courses and Cross-disciplinary (CD) Courses Students are required to take 12 units from the above courses with at least two ID courses and no more than one CD course to satisfy the 12 units required in this group. 12 PROGRAMME REQUIREMENTS Note that at least 80% of the unit requirements in a Bachelor programme’s major must be at level 1000 to 4000. 80 Core Courses 60 BT2102 Data Management and Visualisation 4 CS2030 Programming Methodology II 4 CS2040 Data Structures and Algorithms 4 IS2101 Business and Technical Communication 2 4 IS2108 Full-stack Software Engineering for AI Solutions I 4 IS2109 AI and Machine Learning Techniques I 4 IS3103 Digital Transformation and Leadership Communication 4 Industry Experience Requirement or CP4101 B.Comp Dissertation 3 12 IS4108 AI Solutioning Capstone Project 8 MA1521 Calculus for Computing 4 MA1522 Linear Algebra for Computing 4 ST2334 Probability and Statistics 4 Programme Elective Courses Complete 5 Business Artificial Intelligence Systems programme elective courses with at least 3 courses at Level-4000 20 Digital Business IS3150 Digital Media Marketing IS3240 Digital Platform Strategy and Architecture IS4262 Digital Product Management Financial Technology IS4226 Systematic Trading Strategies and Systems IS4228 Information Technologies in Financial Services IS4302 Blockchain and Distributed Ledger Technologies IS4303 IT-Mediated Financial Solutions and Platforms IT Solutioning CS2105 Introduction to Computer Networks IS2102 Requirements Analysis for Business IT Systems IS3108 Full-stack Software Engineering for AI Solutions II IS3221 ERP Systems with Analytics Solutions IS4100 IT Project Management IS4234 Governance, Regulation, and Compliance Technology IS4236 Cloud Services and Infrastructure Management IS4243 Digital Transformation Consulting IS4248 Digital Business and the Metaverse IS4250 IT-enabled Healthcare Solutioning IS4301 Agile IT with DevOps AI Solutioning BT3017 Feature Engineering for Machine Learning BT4014 Analytics Driven Design of Adaptive Systems BT4221 Advanced Analytics with Big Data Technologies BT4301 Business Analytics Solutions and Development IS3107 Data Engineering IS3109 AI and Machine Learning Techniques II IS4151 AIoT Solutions and Development IS4246 Smart Systems and AI Governance IS4400 Human-AI Interaction IS4401 Generative AI and Business Applications IS4402 Machine Learning with Unstructured Data IT Business Innovation and Entrepreneurship CP3100 Information Systems and Analytics Research Methodology IS3251 Principles of Technology Entrepreneurship IS4152 Affective Computing IS4241 Social Media Network Analysis IS4261 Designing AI-driven Business Innovations IT Security and Legal Aspects CS2107 Introduction to Information Security IFS4101 Legal Aspects of Information Security IS4231 Information Security Management IS4233 Legal Aspects of Information Technology IS4238 Strategic Cybersecurity All courses are 4 units each UNRESTRICTED ELECTIVES 40 Grand Total 160 Footnotes: 1 Students can refer to: https://www.nus.edu.sg/registrar/academic-information-policies/undergraduate-students/general-education/for-students-admitted-from-AY2021-22 for the requirements for University Level Requirements. Two programme requirements are used to satisfy the new university level requirements, specifically BT1101 will satisfy the Data Literacy pillar and CS1010A will satisfy the Digital Literacy pillar. 2 Taught by the Centre for English Language Communication. 3 Students may take any internship programmes that are at least 12 units and of at least 6 months continuous duration (e.g., IS4010 Digital Transformation Leadership Programme, CP3880 Advanced Technology Attachment Programme, NUS Overseas Colleges) to satisfy the Industry Experience Requirement. Students who aim for Honours (Highest Distinction) must pass CP4101 B.Comp. Dissertation. In this regard, students with GPA of 4.00 or higher after completing at least 70% (i.e. 112 units) of the total unit requirement for the degree programme may opt to replace the Industry Experience Requirement with CP4101 (12 units)."
+  ],
+  "tables": [
+    [
+      [
+        "Courses",
+        "Units",
+        "Subtotals"
+      ],
+      [
+        "COMMON CURRICULUM REQUIREMENTS 1",
+        "",
+        "40"
+      ],
+      [
+        "University Level Requirements : 6 University Pillars",
+        "24",
+        ""
+      ],
+      [
+        "Digital Literacy — CS1010A Programming Methodology",
+        "4",
+        ""
+      ],
+      [
+        "Critique and Expression — GEX%",
+        "4",
+        ""
+      ],
+      [
+        "Cultures and Connections — GEC%",
+        "4",
+        ""
+      ],
+      [
+        "Data Literacy — BT1101 Introduction to Business Analytics",
+        "4",
+        ""
+      ],
+      [
+        "Singapore Studies — GES%",
+        "4",
+        ""
+      ],
+      [
+        "Communities and Engagement — GEN%",
+        "4",
+        ""
+      ],
+      [
+        "Computing Ethics",
+        "4",
+        ""
+      ],
+      [
+        "IS1108 Digital and AI Ethics",
+        "4",
+        ""
+      ],
+      [
+        "Interdisciplinary & Cross-Disciplinary Education Comprises of Interdisciplinary (ID) Courses and Cross-disciplinary (CD) Courses Students are required to take 12 units from the above courses with at least two ID courses and no more than one CD course to satisfy the 12 units required in this group.",
+        "12",
+        ""
+      ],
+      [
+        "PROGRAMME REQUIREMENTS Note that at least 80% of the unit requirements in a Bachelor programme’s major must be at level 1000 to 4000.",
+        "",
+        "80"
+      ],
+      [
+        "Core Courses",
+        "60",
+        ""
+      ],
+      [
+        "BT2102 Data Management and Visualisation",
+        "4",
+        ""
+      ],
+      [
+        "CS2030 Programming Methodology II",
+        "4",
+        ""
+      ],
+      [
+        "CS2040 Data Structures and Algorithms",
+        "4",
+        ""
+      ],
+      [
+        "IS2101 Business and Technical Communication 2",
+        "4",
+        ""
+      ],
+      [
+        "IS2108 Full-stack Software Engineering for AI Solutions I",
+        "4",
+        ""
+      ],
+      [
+        "IS2109 AI and Machine Learning Techniques I",
+        "4",
+        ""
+      ],
+      [
+        "IS3103 Digital Transformation and Leadership Communication",
+        "4",
+        ""
+      ],
+      [
+        "Industry Experience Requirement or CP4101 B.Comp Dissertation 3",
+        "12",
+        ""
+      ],
+      [
+        "IS4108 AI Solutioning Capstone Project",
+        "8",
+        ""
+      ],
+      [
+        "MA1521 Calculus for Computing",
+        "4",
+        ""
+      ],
+      [
+        "MA1522 Linear Algebra for Computing",
+        "4",
+        ""
+      ],
+      [
+        "ST2334 Probability and Statistics",
+        "4",
+        ""
+      ],
+      [
+        "Programme Elective Courses Complete 5 Business Artificial Intelligence Systems programme elective courses with at least 3 courses at Level-4000",
+        "20",
+        ""
+      ],
+      [
+        "Digital Business IS3150 Digital Media Marketing IS3240 Digital Platform Strategy and Architecture IS4262 Digital Product Management Financial Technology IS4226 Systematic Trading Strategies and Systems IS4228 Information Technologies in Financial Services IS4302 Blockchain and Distributed Ledger Technologies IS4303 IT-Mediated Financial Solutions and Platforms IT Solutioning CS2105 Introduction to Computer Networks IS2102 Requirements Analysis for Business IT Systems IS3108 Full-stack Software Engineering for AI Solutions II IS3221 ERP Systems with Analytics Solutions IS4100 IT Project Management IS4234 Governance, Regulation, and Compliance Technology IS4236 Cloud Services and Infrastructure Management IS4243 Digital Transformation Consulting IS4248 Digital Business and the Metaverse IS4250 IT-enabled Healthcare Solutioning IS4301 Agile IT with DevOps AI Solutioning BT3017 Feature Engineering for Machine Learning BT4014 Analytics Driven Design of Adaptive Systems BT4221 Advanced Analytics with Big Data Technologies BT4301 Business Analytics Solutions and Development IS3107 Data Engineering IS3109 AI and Machine Learning Techniques II IS4151 AIoT Solutions and Development IS4246 Smart Systems and AI Governance IS4400 Human-AI Interaction IS4401 Generative AI and Business Applications IS4402 Machine Learning with Unstructured Data IT Business Innovation and Entrepreneurship CP3100 Information Systems and Analytics Research Methodology IS3251 Principles of Technology Entrepreneurship IS4152 Affective Computing IS4241 Social Media Network Analysis IS4261 Designing AI-driven Business Innovations IT Security and Legal Aspects CS2107 Introduction to Information Security IFS4101 Legal Aspects of Information Security IS4231 Information Security Management IS4233 Legal Aspects of Information Technology IS4238 Strategic Cybersecurity",
+        "All courses are 4 units each",
+        ""
+      ],
+      [
+        "UNRESTRICTED ELECTIVES",
+        "",
+        "40"
+      ],
+      [
+        "Grand Total",
+        "",
+        "160"
+      ]
+    ]
+  ]
+}
