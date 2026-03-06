@@ -30,7 +30,8 @@ TARGETS = [
     },
 ]
 
-OUTPUT_DIR = Path("data/raw/ug_curr")
+BASE_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = BASE_DIR / "data" / "raw" / "ug_curr"
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
 

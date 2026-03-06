@@ -4,8 +4,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-INPUT_DIR = Path("data/raw/mcf_data")
-OUTPUT_DIR = Path("data/raw/mcf_clean_data")
+BASE_DIR = Path(__file__).resolve().parent
+INPUT_DIR = BASE_DIR / "data" / "raw" / "mcf_data"
+OUTPUT_DIR = BASE_DIR / "data" / "raw" / "mcf_clean_data"
 FIELDS = (
     "title",
     "description",
@@ -35,6 +36,9 @@ def extract_record(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> None:
+    if not INPUT_DIR.exists():
+        raise FileNotFoundError(f"Input directory not found: {INPUT_DIR}")
+
     json_files = sorted(INPUT_DIR.glob("*.json"))
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
