@@ -1,0 +1,192 @@
+{
+  "url": "https://www.comp.nus.edu.sg/programmes/ug/isc/curr/",
+  "status": "ok",
+  "heading": "Summary of degree requirement for Bachelor of Computing in Information Security",
+  "text_blocks": [
+    "Summary of degree requirement for Bachelor of Computing in Information Security Courses Units Subtotals COMMON CURRICULUM REQUIREMENTS 1 40 University Level Requirements : 6 University Pillars 24 Digital Literacy — CS1010 Programming Methodology 4 Critique and Expression — GEX% 4 Cultures and Connections — GEC% 4 Data Literacy — Either GEA1000, BT1101, ST1131 or DSE1101 4 Singapore Studies — GES% 4 Communities and Engagement — GEN% 4 Computing Ethics 4 IS1108 Digital Ethics and Data Privacy 4 Interdisciplinary & Cross-Disciplinary Education Comprises of Interdisciplinary (ID) Courses and Cross-disciplinary (CD) Courses Students are required to take 12 units from the above courses with at least two ID courses and no more than one CD course to satisfy the 12 units required in this group. 12 PROGRAMME REQUIREMENTS Note that least 80% of the unit requirements in a Bachelor programme’s major must be at level 1000 to 4000. 84 Computing Foundation 32 CS1231S Discrete Structures 4 CS2030 Programming Methodology II 4 CS2040C Data Structures and Algorithms 4 CS2100 Computer Organisation 4 CS2101 Effective Communication for Computing Professionals 2 4 CS2103T Software Engineering 2 4 CS2105 Introduction to Computer Networks 4 CS2106 Introduction to Operating Systems 4 Information Security Requirements 28 CS2107 Introduction to Information Security 4 CS3235 Computer Security 4 Either IFS4205 Information Security Capstone Projector (CS4238 Computer Security Practice and IFS4103 Penetration Testing Practice) 8 IS4231 Information Security Management 4 Programme Electives Complete 8 units from the following list of Information Security elective courses: CS4230 Foundations of Modern Cryptography Either CS4236 Cryptography Theory and Practice; or MA4261 Coding and Cryptography CS4238 Computer Security Practice CS4239 Software Security CS4257 Algorithmic Foundations of Privacy CS4276 IoT Security CS5231 Systems Security CS5321 Network Security CS5322 Database Security CS5331 Web Security CS5332 Biometric Authentication IFS4101 Legal Aspects of Information Security IFS4102 Digital Forensics IFS4103 Penetration Testing Practice IS4204 IT Governance IS4233 Legal Aspects of Information Technology IS4234 Governance, Regulation, and Compliance Technology IS4238 Strategic Cybersecurity IS4302 Blockchain and Distributed Ledger Technologies Other level-4000 or above courses approved by the School of Computing UG Office 8 Computing Requirements 12 Complete 12 units of CS-coded, IS-coded, or CP-coded courses subject to the following conditions: CS-coded and IS-coded courses must be at level-3000 or above. At least 6 units must consist of industrial experience courses. 12 Mathematics 12 MA1521 Calculus for Computing 4 MA1522 Linear Algebra for Computing 4 ST2334 Probability and Statistics 3 4 UNRESTRICTED ELECTIVES 4 36 Grand Total 160 Footnotes: 1 Students can refer to: https://www.nus.edu.sg/registrar/academic-information-policies/undergraduate-students/general-education/for-students-admitted-from-AY2021-22 for the University Level Requirements (ULR). CS1010 will satisfy the Digital Literacy pillar. 2 Students taking CS2103T Software Engineering must take CS2101 Effective Communication for Computing Professionals in the same semester. 3 Students pursuing a Second Major in Mathematics or Statistics should take ST2334 Probability and Statistics. If a student has taken (ST2131 or MA2216 or MA2116) and ST2132, then the student does not need to take ST2334. 4 Students without A-level or H2 mathematics or equivalent are required to complete MA1301/X Introductory Mathematics or equivalent as part of the UE."
+  ],
+  "tables": [
+    [
+      [
+        "Courses",
+        "Units",
+        "Subtotals"
+      ],
+      [
+        "COMMON CURRICULUM REQUIREMENTS 1",
+        "",
+        "40"
+      ],
+      [
+        "University Level Requirements : 6 University Pillars",
+        "24",
+        ""
+      ],
+      [
+        "Digital Literacy — CS1010 Programming Methodology",
+        "4",
+        ""
+      ],
+      [
+        "Critique and Expression — GEX%",
+        "4",
+        ""
+      ],
+      [
+        "Cultures and Connections — GEC%",
+        "4",
+        ""
+      ],
+      [
+        "Data Literacy — Either GEA1000, BT1101, ST1131 or DSE1101",
+        "4",
+        ""
+      ],
+      [
+        "Singapore Studies — GES%",
+        "4",
+        ""
+      ],
+      [
+        "Communities and Engagement — GEN%",
+        "4",
+        ""
+      ],
+      [
+        "Computing Ethics",
+        "4",
+        ""
+      ],
+      [
+        "IS1108 Digital Ethics and Data Privacy",
+        "4",
+        ""
+      ],
+      [
+        "Interdisciplinary & Cross-Disciplinary Education Comprises of Interdisciplinary (ID) Courses and Cross-disciplinary (CD) Courses Students are required to take 12 units from the above courses with at least two ID courses and no more than one CD course to satisfy the 12 units required in this group.",
+        "12",
+        ""
+      ],
+      [
+        "PROGRAMME REQUIREMENTS Note that least 80% of the unit requirements in a Bachelor programme’s major must be at level 1000 to 4000.",
+        "",
+        "84"
+      ],
+      [
+        "Computing Foundation",
+        "32",
+        ""
+      ],
+      [
+        "CS1231S Discrete Structures",
+        "4",
+        ""
+      ],
+      [
+        "CS2030 Programming Methodology II",
+        "4",
+        ""
+      ],
+      [
+        "CS2040C Data Structures and Algorithms",
+        "4",
+        ""
+      ],
+      [
+        "CS2100 Computer Organisation",
+        "4",
+        ""
+      ],
+      [
+        "CS2101 Effective Communication for Computing Professionals 2",
+        "4",
+        ""
+      ],
+      [
+        "CS2103T Software Engineering 2",
+        "4",
+        ""
+      ],
+      [
+        "CS2105 Introduction to Computer Networks",
+        "4",
+        ""
+      ],
+      [
+        "CS2106 Introduction to Operating Systems",
+        "4",
+        ""
+      ],
+      [
+        "Information Security Requirements",
+        "28",
+        ""
+      ],
+      [
+        "CS2107 Introduction to Information Security",
+        "4",
+        ""
+      ],
+      [
+        "CS3235 Computer Security",
+        "4",
+        ""
+      ],
+      [
+        "Either IFS4205 Information Security Capstone Projector (CS4238 Computer Security Practice and IFS4103 Penetration Testing Practice)",
+        "8",
+        ""
+      ],
+      [
+        "IS4231 Information Security Management",
+        "4",
+        ""
+      ],
+      [
+        "Programme Electives Complete 8 units from the following list of Information Security elective courses: CS4230 Foundations of Modern Cryptography Either CS4236 Cryptography Theory and Practice; or MA4261 Coding and Cryptography CS4238 Computer Security Practice CS4239 Software Security CS4257 Algorithmic Foundations of Privacy CS4276 IoT Security CS5231 Systems Security CS5321 Network Security CS5322 Database Security CS5331 Web Security CS5332 Biometric Authentication IFS4101 Legal Aspects of Information Security IFS4102 Digital Forensics IFS4103 Penetration Testing Practice IS4204 IT Governance IS4233 Legal Aspects of Information Technology IS4234 Governance, Regulation, and Compliance Technology IS4238 Strategic Cybersecurity IS4302 Blockchain and Distributed Ledger Technologies Other level-4000 or above courses approved by the School of Computing UG Office",
+        "8",
+        ""
+      ],
+      [
+        "Computing Requirements",
+        "12",
+        ""
+      ],
+      [
+        "Complete 12 units of CS-coded, IS-coded, or CP-coded courses subject to the following conditions: CS-coded and IS-coded courses must be at level-3000 or above. At least 6 units must consist of industrial experience courses.",
+        "12",
+        ""
+      ],
+      [
+        "Mathematics",
+        "12",
+        ""
+      ],
+      [
+        "MA1521 Calculus for Computing",
+        "4",
+        ""
+      ],
+      [
+        "MA1522 Linear Algebra for Computing",
+        "4",
+        ""
+      ],
+      [
+        "ST2334 Probability and Statistics 3",
+        "4",
+        ""
+      ],
+      [
+        "UNRESTRICTED ELECTIVES 4",
+        "",
+        "36"
+      ],
+      [
+        "Grand Total",
+        "",
+        "160"
+      ]
+    ]
+  ]
+}

@@ -1,0 +1,33 @@
+Write a Python scraper for these curriculum URLs:
+<PASTE URLS>
+
+Requirements:
+1. For NUS Computing UG curriculum pages (`comp.nus.edu.sg/.../curr/`):
+- Find `div.eael-accordion-list` containers.
+- Identify the container that includes the phrase “summary of degree requirements” (case-insensitive).
+- Inside that container, find the matching `div.eael-accordion-header` whose title (`.eael-accordion-tab-title`) contains that phrase.
+- Use the header’s `aria-controls` to locate the linked content div and extract that section’s text + tables.
+- If accordion structure fails, fallback to heading-based extraction for “Summary of degree requirements”.
+
+2. For non-accordion pages :
+- Extract the “Degree Requirements”/“Requirements” section by heading.
+- If not found, fallback to main body text.
+
+3. Output format:
+- Save one JSON per URL (not one combined file).
+- Store in `data/raw/ug_curr/`.
+- Filename should be URL-derived (sanitized host + path), e.g. `www_comp_nus_edu_sg_programmes_ug_cs_curr.json`.
+- Overwrite existing files on rerun.
+
+4. JSON schema per file:
+- `url`
+- `status` (`ok`, `heading_not_found`, `accordion_found_content_missing`, `request_failed`, etc.)
+- `heading`
+- `text_blocks` (list of cleaned text blocks)
+- `tables` (list of table rows as list-of-lists)
+
+5. Implementation details:
+- Use `requests` + `BeautifulSoup`.
+- Normalize whitespace in extracted text.
+- Handle HTTP errors with try/except and record error status per URL.
+- Save files as UTF-8 without BOM.
