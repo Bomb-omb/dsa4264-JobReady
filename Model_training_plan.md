@@ -2,7 +2,7 @@
 adapted from methodology of https://link.springer.com/chapter/10.1007/978-981-96-8197-6_24
 ## Summary
 - Use `data/raw/jobsandskills-skillsfuture-unique-skills-list.xlsx` as the primary v1 SkillsFuture taxonomy source.
-- Treat the workbook as good enough for taxonomy mapping after cleaning: it already has `2201` unique skill rows with non-empty titles and descriptions.
+- Whatever new skills that we add in while doing manual labelling will be added on to the taxonomy?
 - Keep the 3-stage pipeline shape from the paper, but implement it with OpenAI-hosted components:
   - fine-tuned structured-output span extraction,
   - embedding-based semantic mapping,
