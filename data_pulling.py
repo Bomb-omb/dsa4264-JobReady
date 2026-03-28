@@ -186,7 +186,7 @@ def reset_page():
 df = pd.read_csv(INPUT_FILE)
 
 # Keep original row order, but deduplicate on description
-unique_df = df[["description"]].drop_duplicates().copy()
+unique_df = df[["moduleCode", "description"]].drop_duplicates().copy()
 unique_df["skills"] = ""
 unique_df["status"] = "pending"
 unique_df["skills"] = unique_df["skills"].astype("object")
@@ -213,6 +213,8 @@ time.sleep(3)
 for i, row in unique_df.iterrows():
     if str(row["status"]).lower() == "success":
         continue
+
+    print(f"Processing {row['moduleCode']}")
 
     description = str(row["description"])
     print(f"Processing unique row {i+1}/{len(unique_df)}")
