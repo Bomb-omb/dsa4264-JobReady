@@ -189,21 +189,23 @@ df = pd.read_csv(INPUT_FILE)
 unique_df = df[["description"]].drop_duplicates().copy()
 unique_df["skills"] = ""
 unique_df["status"] = "pending"
+unique_df["skills"] = unique_df["skills"].astype("object")
+unique_df["status"] = unique_df["status"].astype("object")
 
 # If progress file exists, resume from it
 if os.path.exists(PROGRESS_FILE):
     saved = pd.read_csv(PROGRESS_FILE)
-    # only resume if structure matches roughly
     if set(["description", "skills", "status"]).issubset(saved.columns):
         unique_df = saved.copy()
-        print(f"Resuming from {PROGRESS_FILE}")
+
+unique_df["skills"] = unique_df["skills"].fillna("").astype("object")
+unique_df["status"] = unique_df["status"].fillna("pending").astype("object")
 
 print(f"Original rows: {len(df)}")
 print(f"Unique descriptions to process: {len(unique_df)}")
 
 print("Starting in 3 seconds. Keep browser fixed and do not touch mouse/keyboard.")
 time.sleep(3)
-unique_df = unique_df.iloc[318:]
 
 # =========================
 # MAIN LOOP
