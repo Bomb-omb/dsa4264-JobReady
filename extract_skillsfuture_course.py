@@ -44,8 +44,6 @@ WAIT_AFTER_TAB_SWITCH = 0.5
 WAIT_FOR_RESULTS = 5
 DOWNLOAD_TIMEOUT = 5
 MAX_RETRIES = 1
-ERROR_REFRESH_THRESHOLD = 5
-TIME_FOR_REFRESH = 2
 
 SKILLS_SECTION_HEADER = "extracted_skills"
 APPS_TOOLS_SECTION_HEADER = "extracted_apps_and_tools"
@@ -355,19 +353,6 @@ def wait_for_download(after_time: float, timeout: int = DOWNLOAD_TIMEOUT) -> Pat
     return None
 
 
-def refresh_website() -> None:
-    print("\nAuto-refreshing website...")
-
-    if SYSTEM in {"Darwin", "Windows"}:
-        pyautogui.hotkey(CMD_KEY, "r")
-    else:
-        print(f"Unsupported OS for auto-refresh: {SYSTEM}")
-        return
-
-    time.sleep(TIME_FOR_REFRESH)
-    print(f"Website refreshed on {SYSTEM}.")
-
-
 def extract_section_from_csv(file_path: Path, section_header: str) -> str:
     values = []
     found_section = False
@@ -463,10 +448,9 @@ def run_extraction_for_text(
     identifier: str,
     text: str,
     args: argparse.Namespace,
-    error_count: int,
-) -> tuple[bool, dict[str, str], str, int]:
+) -> tuple[bool, dict[str, str], str]:
     if not text.strip():
-        return False, {}, "Text to extract is empty.", error_count
+        return False, {}, "Text to extract is empty."
 
     print(f"Processing {identifier}")
 
@@ -498,24 +482,13 @@ def run_extraction_for_text(
             print(f"  Skills: {attempt_results[args.output_column]}")
             print(f"  Apps & Tools: {attempt_results[args.apps_tools_column]}")
             reset_page()
-            return True, attempt_results, "", 0
+            return True, attempt_results, ""
 
         except Exception as exc:
             partial_results.update(attempt_results)
             last_error = str(exc)
-            error_count += 1
 
             print(f"  Error: {last_error}")
-            print(f"  Current error count: {error_count}")
-
-            if error_count >= ERROR_REFRESH_THRESHOLD:
-                print("Too many errors. Refreshing website.")
-                refresh_website()
-                error_count = 0
-                try:
-                    reset_page()
-                except Exception:
-                    pass
 
             try:
                 reset_page()
@@ -525,7 +498,7 @@ def run_extraction_for_text(
             time.sleep(1.5)
 
     print(f"  Failed after retries: {last_error}")
-    return False, partial_results, last_error, error_count
+    return False, partial_results, last_error
 
 
 def apply_unique_results_to_full_dataframe(
@@ -587,12 +560,10 @@ def process_single_row(
         print("Row already marked success. Use --force to rerun it.")
         return
 
-    error_count = 0
-    success, partial_results, error_message, _ = run_extraction_for_text(
+    success, partial_results, error_message = run_extraction_for_text(
         identifier=identifier,
         text=text,
         args=args,
-        error_count=error_count,
     )
 
     apply_partial_results(df, row_label, partial_results)
@@ -614,7 +585,6 @@ def process_all_unique_rows(
     unique_df = build_unique_rows_dataframe(df, args)
 
     print(f"Unique descriptions to process: {len(unique_df)}")
-    error_count = 0
 
     for position, (row_label, row) in enumerate(unique_df.iterrows(), start=1):
         current_status = str(row[args.status_column]).strip().lower()
@@ -625,11 +595,10 @@ def process_all_unique_rows(
         text = str(row[args.text_column])
 
         print(f"Processing unique row {position}/{len(unique_df)}")
-        success, partial_results, error_message, error_count = run_extraction_for_text(
+        success, partial_results, error_message = run_extraction_for_text(
             identifier=identifier,
             text=text,
             args=args,
-            error_count=error_count,
         )
 
         apply_partial_results(unique_df, row_label, partial_results)
@@ -659,7 +628,6 @@ def process_batch_rows(
 
     print(f"Processing physical rows {start_row} to {end_row - 1}")
     print(f"Unique descriptions to process in batch: {len(unique_df)}")
-    error_count = 0
 
     for position, (row_label, row) in enumerate(unique_df.iterrows(), start=1):
         current_status = str(row[args.status_column]).strip().lower()
@@ -670,11 +638,10 @@ def process_batch_rows(
         text = str(row[args.text_column])
 
         print(f"Processing batch unique row {position}/{len(unique_df)}")
-        success, partial_results, error_message, error_count = run_extraction_for_text(
+        success, partial_results, error_message = run_extraction_for_text(
             identifier=identifier,
             text=text,
             args=args,
-            error_count=error_count,
         )
 
         apply_partial_results(unique_df, row_label, partial_results)

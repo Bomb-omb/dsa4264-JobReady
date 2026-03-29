@@ -62,6 +62,43 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(course.normalize_status_value(""), "pending")
         self.assertEqual(course.normalize_status_value(" success "), "success")
 
+    def test_run_extraction_for_text_rejects_empty_text(self) -> None:
+        success, partial_results, error_message = course.run_extraction_for_text(
+            identifier="CS1010",
+            text="   ",
+            args=make_args(),
+        )
+
+        self.assertFalse(success)
+        self.assertEqual(partial_results, {})
+        self.assertEqual(error_message, "Text to extract is empty.")
+
+    def test_run_extraction_for_text_returns_partial_results_on_failure(self) -> None:
+        args = make_args()
+
+        with (
+            mock.patch.object(course, "paste_text"),
+            mock.patch.object(course, "click_result_tab"),
+            mock.patch.object(
+                course,
+                "click_download_and_read",
+                side_effect=["Programming", RuntimeError("Apps & Tools download failed.")],
+            ) as download_mock,
+            mock.patch.object(course, "reset_page") as reset_mock,
+            mock.patch.object(course.time, "sleep"),
+        ):
+            success, partial_results, error_message = course.run_extraction_for_text(
+                identifier="CS1010",
+                text="Intro programming",
+                args=args,
+            )
+
+        self.assertFalse(success)
+        self.assertEqual(partial_results, {"extracted_skills": "Programming"})
+        self.assertEqual(error_message, "Apps & Tools download failed.")
+        self.assertEqual(download_mock.call_count, 2)
+        reset_mock.assert_called_once()
+
     def test_apply_unique_results_maps_duplicate_descriptions(self) -> None:
         args = make_args()
         full_df = pd.DataFrame(
@@ -279,6 +316,127 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(full_df.at[0, "done"], "pending")
         self.assertEqual(full_df.at[1, "extracted_skills"], "Accounting")
         self.assertEqual(full_df.at[2, "extracted_skills"], "Programming")
+
+    def test_process_single_row_writes_error_status_and_partial_results(self) -> None:
+        args = make_args(row_index=0)
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                }
+            ]
+        )
+        input_path = Path("data/modules.csv")
+        output_path = Path("data/modules_skillsfuture.csv")
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                return_value=(False, {"extracted_skills": "Programming"}, "Skills download failed."),
+            ) as run_mock,
+            mock.patch.object(course, "save_dataframe") as save_mock,
+        ):
+            course.process_single_row(df, args, input_path, output_path)
+
+        self.assertEqual(df.at[0, "extracted_skills"], "Programming")
+        self.assertEqual(df.at[0, "extracted_apps_tools"], "")
+        self.assertEqual(df.at[0, "done"], "error: Skills download failed.")
+        run_mock.assert_called_once_with(
+            identifier="CS1010",
+            text="Intro programming",
+            args=args,
+        )
+        save_mock.assert_called_once_with(df, input_path, output_path, False)
+
+    def test_process_single_row_writes_success_status(self) -> None:
+        args = make_args(row_index=0)
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                }
+            ]
+        )
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                return_value=(
+                    True,
+                    {
+                        "extracted_skills": "Programming",
+                        "extracted_apps_tools": "Python",
+                    },
+                    "",
+                ),
+            ),
+            mock.patch.object(course, "save_dataframe"),
+        ):
+            course.process_single_row(df, args, Path("in.csv"), Path("out.csv"))
+
+        self.assertEqual(df.at[0, "extracted_skills"], "Programming")
+        self.assertEqual(df.at[0, "extracted_apps_tools"], "Python")
+        self.assertEqual(df.at[0, "done"], "success")
+
+    def test_process_all_unique_rows_continues_after_failed_row_without_shared_error_state(self) -> None:
+        args = make_args()
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "ACC1701",
+                    "description": "Accounting basics",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                },
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                },
+            ]
+        )
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                side_effect=[
+                    (False, {"extracted_skills": "Accounting"}, "First row failed."),
+                    (
+                        True,
+                        {
+                            "extracted_skills": "Programming",
+                            "extracted_apps_tools": "Python",
+                        },
+                        "",
+                    ),
+                ],
+            ) as run_mock,
+            mock.patch.object(course, "save_dataframe") as save_mock,
+        ):
+            course.process_all_unique_rows(df, args, Path("in.csv"), Path("out.csv"))
+
+        self.assertEqual(df.at[0, "extracted_skills"], "Accounting")
+        self.assertEqual(df.at[0, "done"], "error: First row failed.")
+        self.assertEqual(df.at[1, "extracted_skills"], "Programming")
+        self.assertEqual(df.at[1, "extracted_apps_tools"], "Python")
+        self.assertEqual(df.at[1, "done"], "success")
+        self.assertEqual(save_mock.call_count, 2)
+        for call in run_mock.call_args_list:
+            self.assertNotIn("error_count", call.kwargs)
 
 
 if __name__ == "__main__":
