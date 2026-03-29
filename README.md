@@ -1,8 +1,8 @@
 # dsa4264-JobReady
 
-## Using `extract_skillsfuture.py`
+## Using `extract_skillsfuture(jd).py`
 
-`extract_skillsfuture.py` automates the SkillsFuture Skills Extraction & Comparison Tool with `pyautogui`.
+`extract_skillsfuture(jd).py` automates the SkillsFuture Skills Extraction & Comparison Tool with `pyautogui`.
 It reads job descriptions from a CSV, pastes them into the website, downloads both result tabs, and writes the extracted values back into the CSV.
 
 ### What it updates
@@ -30,7 +30,7 @@ Before running the script:
 
 1. Open Microsoft Edge.
 2. Open the SkillsFuture Skills Extraction & Comparison Tool.
-3. Keep the browser window in the same layout used to set the coordinates in `extract_skillsfuture.py`.
+3. Keep the browser window in the same layout used to set the coordinates in `extract_skillsfuture(jd).py`.
 4. Make sure downloads go to your normal `Downloads` folder.
 5. Do not place the mouse in any screen corner, because `pyautogui` fail-safe is enabled.
 
@@ -42,7 +42,7 @@ The current screen positions are stored in:
 - `DOWNLOAD_BTN_POS`
 - `RESET_BTN_POS`
 
-If the website layout changes or the clicks miss the controls, update those coordinates in `extract_skillsfuture.py`.
+If the website layout changes or the clicks miss the controls, update those coordinates in `extract_skillsfuture(jd).py`.
 
 ### Test on the first row of `jd2.csv`
 
@@ -81,3 +81,59 @@ Behavior:
 ```powershell
 python extract_skillsfuture.py --help
 ```
+
+## Using `extract_skillsfuture_course.py`
+
+`extract_skillsfuture_course.py` automates the same SkillsFuture workflow for NUS course descriptions.
+It reads module descriptions from `data/2025-2026_module_clean_with_prereq.csv` and writes results to a
+derived CSV by default so the source file stays untouched.
+
+### Default input and output
+
+- input file: `data/2025-2026_module_clean_with_prereq.csv`
+- id column: `moduleCode`
+- text column: `description`
+- output column: `extracted_skills`
+- apps/tools column: `extracted_apps_tools`
+- status column: `done`
+- default output file: `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`
+
+If the output columns do not exist in the input file, the script creates them automatically in the output.
+
+### Test on the first course row
+
+Use this first before a full run:
+
+```powershell
+python extract_skillsfuture_course.py --row-index 0 --force
+```
+
+Expected result:
+
+- `data/2025-2026_module_clean_with_prereq_skillsfuture.csv` is created
+- it contains all original module columns plus `extracted_skills`, `extracted_apps_tools`, and `done`
+- row `0` is updated in the derived CSV
+- `done` becomes `success` only if both tab downloads succeed
+
+### Run the full course file
+
+```powershell
+python extract_skillsfuture_course.py
+```
+
+Behavior:
+
+- duplicate descriptions are processed once and mapped back to matching rows
+- rows already marked `success` are skipped unless `--force` is used
+- partial results are preserved if one tab succeeds and the other fails
+- the source CSV remains unchanged by default
+
+### Optional in-place run
+
+If you explicitly want to update the source CSV instead of writing the derived output file:
+
+```powershell
+python extract_skillsfuture_course.py --in-place
+```
+
+This creates a one-time backup at `data/2025-2026_module_clean_with_prereq.backup.csv`.
