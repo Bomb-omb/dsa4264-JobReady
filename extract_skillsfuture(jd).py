@@ -4,7 +4,7 @@ import platform
 import shutil
 import time
 from pathlib import Path
-
+from typing import Optional
 import pandas as pd
 
 try:
@@ -32,11 +32,11 @@ DEFAULT_STATUS_COLUMN = "done"
 DOWNLOAD_DIR = Path.home() / "Downloads"
 
 # Approximate positions based on the current Edge layout in your screenshots.
-TEXTBOX_POS = (650, 620)
-SKILLS_TAB_POS = (1045, 444)
-APPS_TOOLS_TAB_POS = (1188, 444)
-DOWNLOAD_BTN_POS = (1010, 510)
-RESET_BTN_POS = (665, 960)
+TEXTBOX_POS = (465, 545)
+SKILLS_TAB_POS = (1382, 554)
+APPS_TOOLS_TAB_POS = (1596, 557)
+DOWNLOAD_BTN_POS = (1348, 655)
+RESET_BTN_POS = (807, 1329)
 
 WAIT_AFTER_PASTE = 2
 WAIT_AFTER_RESET = 2
@@ -98,8 +98,10 @@ def validate_input_path(input_path: Path) -> None:
 
 def ensure_output_columns(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFrame:
     prepared = df.copy()
-    if args.apps_tools_column not in prepared.columns:
-        prepared[args.apps_tools_column] = ""
+    # Ensure all three "result" columns exist before moving on
+    for column in [args.output_column, args.apps_tools_column, args.status_column]:
+        if column not in prepared.columns:
+            prepared[column] = ""
     return prepared
 
 
@@ -218,7 +220,7 @@ def manual_pause() -> None:
     time.sleep(1)
 
 
-def get_latest_csv(after_time: float) -> Path | None:
+def get_latest_csv(after_time: float) -> Optional[Path]:
     files = list(DOWNLOAD_DIR.glob("*.csv"))
     if not files:
         return None
@@ -229,7 +231,7 @@ def get_latest_csv(after_time: float) -> Path | None:
     return None
 
 
-def wait_for_download(after_time: float, timeout: int = DOWNLOAD_TIMEOUT) -> Path | None:
+def wait_for_download(after_time: float, timeout: int = DOWNLOAD_TIMEOUT) -> Optional[Path]:
     start = time.time()
     while time.time() - start < timeout:
         file_path = get_latest_csv(after_time)
