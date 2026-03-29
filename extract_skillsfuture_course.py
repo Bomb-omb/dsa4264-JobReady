@@ -66,6 +66,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--apps-tools-column", default=DEFAULT_APPS_TOOLS_COLUMN)
     parser.add_argument("--status-column", default=DEFAULT_STATUS_COLUMN)
     parser.add_argument("--row-index", type=int)
+    parser.add_argument("--start-course-code")
+    parser.add_argument("--row-count", type=int)
     parser.add_argument("--in-place", action="store_true")
     parser.add_argument("--force", action="store_true")
     return parser.parse_args(argv)
@@ -95,6 +97,23 @@ def require_runtime_dependencies() -> None:
 def validate_input_path(input_path: Path) -> None:
     if not input_path.exists():
         raise SystemExit(f"Input file not found: {input_path}")
+
+
+def is_batch_resume_mode(args: argparse.Namespace) -> bool:
+    return args.start_course_code is not None
+
+
+def validate_args(args: argparse.Namespace) -> None:
+    if args.row_index is not None and args.start_course_code is not None:
+        raise SystemExit("--row-index cannot be used with --start-course-code.")
+    if args.start_course_code is None and args.row_count is not None:
+        raise SystemExit("--row-count requires --start-course-code.")
+    if args.start_course_code is not None and args.row_count is None:
+        raise SystemExit("--row-count is required with --start-course-code.")
+    if args.row_count is not None and args.row_count <= 0:
+        raise SystemExit("--row-count must be a positive integer.")
+    if args.start_course_code is not None and args.in_place:
+        raise SystemExit("--in-place cannot be used with --start-course-code.")
 
 
 def ensure_output_columns(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFrame:
@@ -167,6 +186,20 @@ def build_output_path(
     return build_default_output_path(input_path)
 
 
+def resolve_load_and_output_paths(
+    input_path: Path,
+    args: argparse.Namespace,
+) -> tuple[Path, Path]:
+    if is_batch_resume_mode(args):
+        output_path = (
+            Path(args.output_file) if args.output_file else build_default_output_path(input_path)
+        )
+        load_path = output_path if output_path.exists() else input_path
+        return load_path, output_path
+
+    return input_path, build_output_path(input_path, args.output_file, args.in_place)
+
+
 def build_backup_path(input_path: Path) -> Path:
     return input_path.with_name(f"{input_path.stem}.backup{input_path.suffix}")
 
@@ -198,19 +231,79 @@ def format_identifier(value: object) -> str:
     return str(value)
 
 
+def normalize_identifier_value(value: object) -> str:
+    if pd.isna(value):
+        return ""
+    return str(value)
+
+
+def get_result_columns(args: argparse.Namespace) -> list[str]:
+    return [args.output_column, args.apps_tools_column, args.status_column]
+
+
+def build_unique_rows_dataframe(
+    df: pd.DataFrame,
+    args: argparse.Namespace,
+) -> pd.DataFrame:
+    return df[
+        [
+            args.id_column,
+            args.text_column,
+            args.output_column,
+            args.apps_tools_column,
+            args.status_column,
+        ]
+    ].drop_duplicates(subset=[args.text_column], keep="first").copy()
+
+
+def find_row_position_by_course_code(
+    df: pd.DataFrame,
+    course_code: str,
+    id_column: str,
+) -> int:
+    normalized_ids = df[id_column].map(normalize_identifier_value)
+    for position, value in enumerate(normalized_ids.tolist()):
+        if value == course_code:
+            return position
+
+    raise SystemExit(f"start-course-code not found in column '{id_column}': {course_code}")
+
+
+def resolve_batch_row_window(
+    df: pd.DataFrame,
+    args: argparse.Namespace,
+) -> tuple[int, int]:
+    if args.start_course_code is None or args.row_count is None:
+        raise ValueError(
+            "start_course_code and row_count must be provided for batch processing."
+        )
+
+    start_row = find_row_position_by_course_code(df, args.start_course_code, args.id_column)
+    end_row = min(start_row + args.row_count, len(df))
+    return start_row, end_row
+
+
 def print_resolved_config(
     args: argparse.Namespace,
     input_path: Path,
+    load_path: Path,
     output_path: Path,
     df: pd.DataFrame,
+    resolved_start_row: int | None = None,
 ) -> None:
     unique_count = df[args.text_column].nunique(dropna=False)
-    row_mode = args.row_index if args.row_index is not None else "all"
+    if args.row_index is not None:
+        row_mode = args.row_index
+    elif is_batch_resume_mode(args):
+        row_mode = "batch"
+    else:
+        row_mode = "all"
     write_mode = "in-place" if args.in_place else "copy"
 
     print(f"Running on: {SYSTEM}")
     print("Resolved config:")
     print(f"  input_file: {input_path}")
+    print(f"  load_file: {load_path}")
     print(f"  output_file: {output_path}")
     print(f"  id_column: {args.id_column}")
     print(f"  text_column: {args.text_column}")
@@ -219,6 +312,11 @@ def print_resolved_config(
     print(f"  status_column: {args.status_column}")
     print(f"  row_index: {row_mode}")
     print(f"  write_mode: {write_mode}")
+    if is_batch_resume_mode(args):
+        print(f"  working_file: {output_path}")
+        print(f"  start_course_code: {args.start_course_code}")
+        print(f"  resolved_start_row: {resolved_start_row}")
+        print(f"  row_count: {args.row_count}")
     print(f"  total_rows: {len(df)}")
     print(f"  unique_text_rows: {unique_count}")
     if args.in_place:
@@ -452,6 +550,21 @@ def apply_unique_results_to_full_dataframe(
     return updated
 
 
+def apply_unique_results_to_row_subset(
+    full_df: pd.DataFrame,
+    row_labels: pd.Index,
+    unique_df: pd.DataFrame,
+    args: argparse.Namespace,
+) -> None:
+    updated_subset = apply_unique_results_to_full_dataframe(
+        full_df.loc[row_labels].copy(),
+        unique_df,
+        args,
+    )
+    result_columns = get_result_columns(args)
+    full_df.loc[row_labels, result_columns] = updated_subset[result_columns]
+
+
 def process_single_row(
     df: pd.DataFrame,
     args: argparse.Namespace,
@@ -498,15 +611,7 @@ def process_all_unique_rows(
     input_path: Path,
     output_path: Path,
 ) -> None:
-    unique_df = df[
-        [
-            args.id_column,
-            args.text_column,
-            args.output_column,
-            args.apps_tools_column,
-            args.status_column,
-        ]
-    ].drop_duplicates(subset=[args.text_column], keep="first").copy()
+    unique_df = build_unique_rows_dataframe(df, args)
 
     print(f"Unique descriptions to process: {len(unique_df)}")
     error_count = 0
@@ -534,10 +639,51 @@ def process_all_unique_rows(
             unique_df.at[row_label, args.status_column] = f"error: {error_message}"
 
         updated_full_df = apply_unique_results_to_full_dataframe(df, unique_df, args)
-        df.loc[:, args.output_column] = updated_full_df[args.output_column]
-        df.loc[:, args.apps_tools_column] = updated_full_df[args.apps_tools_column]
-        df.loc[:, args.status_column] = updated_full_df[args.status_column]
+        df.loc[:, get_result_columns(args)] = updated_full_df[get_result_columns(args)]
 
+        save_dataframe(df, input_path, output_path, args.in_place)
+
+    print(f"Saved output to: {output_path}")
+
+
+def process_batch_rows(
+    df: pd.DataFrame,
+    args: argparse.Namespace,
+    input_path: Path,
+    output_path: Path,
+    start_row: int,
+    end_row: int,
+) -> None:
+    batch_df = df.iloc[start_row:end_row].copy()
+    unique_df = build_unique_rows_dataframe(batch_df, args)
+
+    print(f"Processing physical rows {start_row} to {end_row - 1}")
+    print(f"Unique descriptions to process in batch: {len(unique_df)}")
+    error_count = 0
+
+    for position, (row_label, row) in enumerate(unique_df.iterrows(), start=1):
+        current_status = str(row[args.status_column]).strip().lower()
+        if current_status == "success" and not args.force:
+            continue
+
+        identifier = format_identifier(row[args.id_column])
+        text = str(row[args.text_column])
+
+        print(f"Processing batch unique row {position}/{len(unique_df)}")
+        success, partial_results, error_message, error_count = run_extraction_for_text(
+            identifier=identifier,
+            text=text,
+            args=args,
+            error_count=error_count,
+        )
+
+        apply_partial_results(unique_df, row_label, partial_results)
+        if success:
+            unique_df.at[row_label, args.status_column] = "success"
+        else:
+            unique_df.at[row_label, args.status_column] = f"error: {error_message}"
+
+        apply_unique_results_to_row_subset(df, batch_df.index, unique_df, args)
         save_dataframe(df, input_path, output_path, args.in_place)
 
     print(f"Saved output to: {output_path}")
@@ -545,18 +691,23 @@ def process_all_unique_rows(
 
 def main() -> None:
     args = parse_args()
+    validate_args(args)
 
     input_path = Path(args.input_file)
-    output_path = build_output_path(input_path, args.output_file, args.in_place)
+    load_path, output_path = resolve_load_and_output_paths(input_path, args)
 
-    validate_input_path(input_path)
+    validate_input_path(load_path)
 
-    df = pd.read_csv(input_path)
+    df = pd.read_csv(load_path)
     df = ensure_output_columns(df, args)
     validate_columns(df, args)
     df = normalize_dataframe(df, args)
 
-    print_resolved_config(args, input_path, output_path, df)
+    resolved_start_row = None
+    if is_batch_resume_mode(args):
+        resolved_start_row, _ = resolve_batch_row_window(df, args)
+
+    print_resolved_config(args, input_path, load_path, output_path, df, resolved_start_row)
     require_runtime_dependencies()
 
     print("Starting in 3 seconds. Keep the browser fixed and do not touch the mouse or keyboard.")
@@ -564,6 +715,9 @@ def main() -> None:
 
     if args.row_index is not None:
         process_single_row(df, args, input_path, output_path)
+    elif is_batch_resume_mode(args):
+        start_row, end_row = resolve_batch_row_window(df, args)
+        process_batch_rows(df, args, input_path, output_path, start_row, end_row)
     else:
         process_all_unique_rows(df, args, input_path, output_path)
 

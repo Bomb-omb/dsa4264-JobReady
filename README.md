@@ -128,6 +128,28 @@ Behavior:
 - partial results are preserved if one tab succeeds and the other fails
 - the source CSV remains unchanged by default
 
+### Resume from a course code for a fixed number of rows
+
+Use this to continue from a specific module code and update only a bounded batch of physical rows:
+
+```powershell
+python extract_skillsfuture_course.py --start-course-code CS1010 --row-count 10
+```
+
+Behavior:
+
+- the working file becomes `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`
+- if that file already exists, the script loads it first so previous extracted values and `done` statuses are preserved
+- if that file does not exist, the script bootstraps from `data/2025-2026_module_clean_with_prereq.csv` and creates the derived output on save
+- processing starts at the first exact `moduleCode` match and runs for the requested number of physical rows
+- duplicate descriptions are deduplicated only inside that selected row window
+
+If you need a different derived output target for batch mode, you can override it explicitly:
+
+```powershell
+python extract_skillsfuture_course.py --start-course-code CS1010 --row-count 10 --output-file data/custom_skillsfuture.csv
+```
+
 ### Optional in-place run
 
 If you explicitly want to update the source CSV instead of writing the derived output file:
@@ -137,3 +159,4 @@ python extract_skillsfuture_course.py --in-place
 ```
 
 This creates a one-time backup at `data/2025-2026_module_clean_with_prereq.backup.csv`.
+`--in-place` cannot be combined with `--start-course-code`.
