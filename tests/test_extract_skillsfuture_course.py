@@ -27,6 +27,12 @@ def make_args(**overrides: object) -> argparse.Namespace:
 
 
 class ExtractSkillsFutureCourseTests(unittest.TestCase):
+    def write_temp_download_file(self, content: str) -> Path:
+        file_path = Path(f"tmp_{self._testMethodName}.csv")
+        file_path.write_text(content, encoding="utf-8")
+        self.addCleanup(lambda: file_path.unlink(missing_ok=True))
+        return file_path
+
     def test_ensure_output_columns_adds_missing_columns(self) -> None:
         df = pd.DataFrame(
             [
@@ -57,6 +63,72 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(course.normalize_status_value(None), "pending")
         self.assertEqual(course.normalize_status_value(""), "pending")
         self.assertEqual(course.normalize_status_value(" success "), "success")
+
+    def test_extract_section_from_csv_preserves_commas_in_skill_names(self) -> None:
+        content = "\n".join(
+            [
+                "input_text",
+                "Example description",
+                "extracted_skills",
+                "Event Logistics Administration; Tags: Others",
+                (
+                    "Meetings, Incentives, Conferences and Exhibitions (MICE) "
+                    "Content and Experience Development and Delivery; Tags: Others"
+                ),
+                "extracted_apps_and_tools",
+                "Python; Tags: Tool",
+            ]
+        )
+
+        file_path = self.write_temp_download_file(content)
+        result = course.extract_section_from_csv(file_path, course.SKILLS_SECTION_HEADER)
+
+        self.assertEqual(
+            result,
+            "Event Logistics Administration | Meetings, Incentives, Conferences and "
+            "Exhibitions (MICE) Content and Experience Development and Delivery",
+        )
+
+    def test_extract_section_from_csv_handles_multiple_comma_containing_skills(self) -> None:
+        content = "\n".join(
+            [
+                "extracted_skills",
+                (
+                    "Meetings, Incentives, Conferences and Exhibitions (MICE) "
+                    "Content and Experience Development and Delivery; Tags: Others"
+                ),
+                "Tour and Travel Coordination, Ticketing and Reservations Management; Tags: CASL",
+                "Events Planning and Management; Tags: Others",
+            ]
+        )
+
+        file_path = self.write_temp_download_file(content)
+        result = course.extract_section_from_csv(file_path, course.SKILLS_SECTION_HEADER)
+
+        self.assertEqual(
+            result,
+            "Meetings, Incentives, Conferences and Exhibitions (MICE) Content and "
+            "Experience Development and Delivery | Tour and Travel Coordination, "
+            "Ticketing and Reservations Management | Events Planning and Management",
+        )
+
+    def test_extract_section_from_csv_deduplicates_lines_while_preserving_order(self) -> None:
+        content = "\n".join(
+            [
+                "extracted_skills",
+                "Data Strategy; Tags: Emerging",
+                "Tour and Travel Coordination, Ticketing and Reservations Management; Tags: CASL",
+                "Data Strategy; Tags: Emerging",
+            ]
+        )
+
+        file_path = self.write_temp_download_file(content)
+        result = course.extract_section_from_csv(file_path, course.SKILLS_SECTION_HEADER)
+
+        self.assertEqual(
+            result,
+            "Data Strategy | Tour and Travel Coordination, Ticketing and Reservations Management",
+        )
 
     def test_run_extraction_for_text_rejects_empty_text(self) -> None:
         success, partial_results, error_message = course.run_extraction_for_text(

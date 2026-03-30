@@ -1,5 +1,4 @@
 import argparse
-import csv
 import platform
 import shutil
 import time
@@ -41,6 +40,10 @@ DOWNLOAD_TIMEOUT = 5
 
 SKILLS_SECTION_HEADER = "extracted_skills"
 APPS_TOOLS_SECTION_HEADER = "extracted_apps_and_tools"
+RESULT_SECTION_HEADERS = {
+    SKILLS_SECTION_HEADER,
+    APPS_TOOLS_SECTION_HEADER,
+}
 
 SYSTEM = platform.system()
 CMD_KEY = "command" if SYSTEM == "Darwin" else "ctrl"
@@ -268,22 +271,22 @@ def extract_section_from_csv(file_path: Path, section_header: str) -> str:
     found_section = False
 
     with file_path.open("r", encoding="utf-8-sig", newline="") as handle:
-        reader = csv.reader(handle, skipinitialspace=True)
+        for line in handle:
+            cleaned = line.strip()
+            if not cleaned:
+                continue
 
-        for row in reader:
-            for cell in row:
-                cleaned = str(cell).strip()
-                if not cleaned:
-                    continue
+            if not found_section:
+                if cleaned == section_header:
+                    found_section = True
+                continue
 
-                if not found_section:
-                    if cleaned == section_header:
-                        found_section = True
-                    continue
+            if cleaned in RESULT_SECTION_HEADERS:
+                break
 
-                value = cleaned.split("; Tags:")[0].strip()
-                if value:
-                    values.append(value)
+            value = cleaned.split("; Tags:", 1)[0].strip()
+            if value:
+                values.append(value)
 
     if not found_section:
         raise RuntimeError(f"Section '{section_header}' not found in downloaded CSV.")
