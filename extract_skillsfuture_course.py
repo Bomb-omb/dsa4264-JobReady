@@ -1,16 +1,10 @@
 import argparse
-import csv
 import platform
 import shutil
 import time
 from pathlib import Path
 
 import pandas as pd
-
-try:
-    import keyboard
-except ModuleNotFoundError:
-    keyboard = None
 
 try:
     import pyautogui
@@ -43,10 +37,13 @@ WAIT_AFTER_RESET = 2
 WAIT_AFTER_TAB_SWITCH = 0.5
 WAIT_FOR_RESULTS = 5
 DOWNLOAD_TIMEOUT = 5
-MAX_RETRIES = 1
 
 SKILLS_SECTION_HEADER = "extracted_skills"
 APPS_TOOLS_SECTION_HEADER = "extracted_apps_and_tools"
+RESULT_SECTION_HEADERS = {
+    SKILLS_SECTION_HEADER,
+    APPS_TOOLS_SECTION_HEADER,
+}
 
 SYSTEM = platform.system()
 CMD_KEY = "command" if SYSTEM == "Darwin" else "ctrl"
@@ -64,17 +61,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--apps-tools-column", default=DEFAULT_APPS_TOOLS_COLUMN)
     parser.add_argument("--status-column", default=DEFAULT_STATUS_COLUMN)
     parser.add_argument("--row-index", type=int)
-    parser.add_argument("--start-course-code")
     parser.add_argument("--row-count", type=int)
-    parser.add_argument("--in-place", action="store_true")
     parser.add_argument("--force", action="store_true")
     return parser.parse_args(argv)
 
 
 def require_runtime_dependencies() -> None:
     missing = []
-    if keyboard is None:
-        missing.append("keyboard")
     if pyautogui is None:
         missing.append("pyautogui")
     if pyperclip is None:
@@ -97,21 +90,13 @@ def validate_input_path(input_path: Path) -> None:
         raise SystemExit(f"Input file not found: {input_path}")
 
 
-def is_batch_resume_mode(args: argparse.Namespace) -> bool:
-    return args.start_course_code is not None
-
-
 def validate_args(args: argparse.Namespace) -> None:
-    if args.row_index is not None and args.start_course_code is not None:
-        raise SystemExit("--row-index cannot be used with --start-course-code.")
-    if args.start_course_code is None and args.row_count is not None:
-        raise SystemExit("--row-count requires --start-course-code.")
-    if args.start_course_code is not None and args.row_count is None:
-        raise SystemExit("--row-count is required with --start-course-code.")
+    if args.row_index is not None and args.row_count is not None:
+        raise SystemExit("--row-index cannot be used with --row-count.")
+    if args.row_index is None and args.row_count is None:
+        raise SystemExit("--row-count is required unless --row-index is used.")
     if args.row_count is not None and args.row_count <= 0:
         raise SystemExit("--row-count must be a positive integer.")
-    if args.start_course_code is not None and args.in_place:
-        raise SystemExit("--in-place cannot be used with --start-course-code.")
 
 
 def ensure_output_columns(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFrame:
@@ -168,34 +153,22 @@ def normalize_dataframe(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFr
     return normalized
 
 
-def build_default_output_path(input_path: Path) -> Path:
-    return input_path.with_name(f"{input_path.stem}_skillsfuture{input_path.suffix}")
-
-
 def build_output_path(
     input_path: Path,
     output_file: str | None,
-    in_place: bool,
 ) -> Path:
-    if in_place:
-        return input_path
     if output_file:
         return Path(output_file)
-    return build_default_output_path(input_path)
+    return input_path
 
 
 def resolve_load_and_output_paths(
     input_path: Path,
     args: argparse.Namespace,
 ) -> tuple[Path, Path]:
-    if is_batch_resume_mode(args):
-        output_path = (
-            Path(args.output_file) if args.output_file else build_default_output_path(input_path)
-        )
-        load_path = output_path if output_path.exists() else input_path
-        return load_path, output_path
-
-    return input_path, build_output_path(input_path, args.output_file, args.in_place)
+    output_path = build_output_path(input_path, args.output_file)
+    load_path = output_path if output_path.exists() else input_path
+    return load_path, output_path
 
 
 def build_backup_path(input_path: Path) -> Path:
@@ -208,16 +181,14 @@ def ensure_backup(input_path: Path) -> None:
         return
 
     shutil.copy2(input_path, backup_path)
-    print(f"Created backup: {backup_path}")
 
 
 def save_dataframe(
     df: pd.DataFrame,
     input_path: Path,
     output_path: Path,
-    in_place: bool,
 ) -> None:
-    if in_place:
+    if output_path == input_path:
         ensure_backup(input_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output_path, index=False)
@@ -226,12 +197,6 @@ def save_dataframe(
 def format_identifier(value: object) -> str:
     if pd.isna(value):
         return "<missing>"
-    return str(value)
-
-
-def normalize_identifier_value(value: object) -> str:
-    if pd.isna(value):
-        return ""
     return str(value)
 
 
@@ -254,81 +219,29 @@ def build_unique_rows_dataframe(
     ].drop_duplicates(subset=[args.text_column], keep="first").copy()
 
 
-def find_row_position_by_course_code(
+def find_first_pending_row(
     df: pd.DataFrame,
-    course_code: str,
-    id_column: str,
-) -> int:
-    normalized_ids = df[id_column].map(normalize_identifier_value)
-    for position, value in enumerate(normalized_ids.tolist()):
-        if value == course_code:
+    status_column: str,
+) -> int | None:
+    normalized_statuses = df[status_column].map(normalize_status_value)
+    for position, value in enumerate(normalized_statuses.tolist()):
+        if value == "pending":
             return position
-
-    raise SystemExit(f"start-course-code not found in column '{id_column}': {course_code}")
+    return None
 
 
 def resolve_batch_row_window(
     df: pd.DataFrame,
     args: argparse.Namespace,
-) -> tuple[int, int]:
-    if args.start_course_code is None or args.row_count is None:
-        raise ValueError(
-            "start_course_code and row_count must be provided for batch processing."
-        )
+) -> tuple[int | None, int | None]:
+    if args.row_count is None:
+        raise ValueError("row_count must be provided for batch processing.")
 
-    start_row = find_row_position_by_course_code(df, args.start_course_code, args.id_column)
+    start_row = find_first_pending_row(df, args.status_column)
+    if start_row is None:
+        return None, None
     end_row = min(start_row + args.row_count, len(df))
     return start_row, end_row
-
-
-def print_resolved_config(
-    args: argparse.Namespace,
-    input_path: Path,
-    load_path: Path,
-    output_path: Path,
-    df: pd.DataFrame,
-    resolved_start_row: int | None = None,
-) -> None:
-    unique_count = df[args.text_column].nunique(dropna=False)
-    if args.row_index is not None:
-        row_mode = args.row_index
-    elif is_batch_resume_mode(args):
-        row_mode = "batch"
-    else:
-        row_mode = "all"
-    write_mode = "in-place" if args.in_place else "copy"
-
-    print(f"Running on: {SYSTEM}")
-    print("Resolved config:")
-    print(f"  input_file: {input_path}")
-    print(f"  load_file: {load_path}")
-    print(f"  output_file: {output_path}")
-    print(f"  id_column: {args.id_column}")
-    print(f"  text_column: {args.text_column}")
-    print(f"  output_column: {args.output_column}")
-    print(f"  apps_tools_column: {args.apps_tools_column}")
-    print(f"  status_column: {args.status_column}")
-    print(f"  row_index: {row_mode}")
-    print(f"  write_mode: {write_mode}")
-    if is_batch_resume_mode(args):
-        print(f"  working_file: {output_path}")
-        print(f"  start_course_code: {args.start_course_code}")
-        print(f"  resolved_start_row: {resolved_start_row}")
-        print(f"  row_count: {args.row_count}")
-    print(f"  total_rows: {len(df)}")
-    print(f"  unique_text_rows: {unique_count}")
-    if args.in_place:
-        print(f"  backup_path: {build_backup_path(input_path)}")
-
-
-def manual_pause() -> None:
-    print("\nPaused. Refresh the website now.")
-    print("Press 'r' to resume.")
-
-    keyboard.wait("r")
-
-    print("Resuming.\n")
-    time.sleep(1)
 
 
 def get_latest_csv(after_time: float) -> Path | None:
@@ -358,22 +271,22 @@ def extract_section_from_csv(file_path: Path, section_header: str) -> str:
     found_section = False
 
     with file_path.open("r", encoding="utf-8-sig", newline="") as handle:
-        reader = csv.reader(handle, skipinitialspace=True)
+        for line in handle:
+            cleaned = line.strip()
+            if not cleaned:
+                continue
 
-        for row in reader:
-            for cell in row:
-                cleaned = str(cell).strip()
-                if not cleaned:
-                    continue
+            if not found_section:
+                if cleaned == section_header:
+                    found_section = True
+                continue
 
-                if not found_section:
-                    if cleaned == section_header:
-                        found_section = True
-                    continue
+            if cleaned in RESULT_SECTION_HEADERS:
+                break
 
-                value = cleaned.split("; Tags:")[0].strip()
-                if value:
-                    values.append(value)
+            value = cleaned.split("; Tags:", 1)[0].strip()
+            if value:
+                values.append(value)
 
     if not found_section:
         raise RuntimeError(f"Section '{section_header}' not found in downloaded CSV.")
@@ -401,7 +314,6 @@ def paste_text(text: str) -> None:
 
 
 def click_result_tab(tab_pos: tuple[int, int], tab_name: str) -> None:
-    print(f"  Opening {tab_name} tab")
     pyautogui.click(tab_pos)
     time.sleep(WAIT_AFTER_TAB_SWITCH)
 
@@ -452,53 +364,38 @@ def run_extraction_for_text(
     if not text.strip():
         return False, {}, "Text to extract is empty."
 
-    print(f"Processing {identifier}")
-
-    last_error = ""
     partial_results: dict[str, str] = {}
+    try:
+        paste_text(text)
+        time.sleep(WAIT_FOR_RESULTS)
 
-    for attempt in range(1, MAX_RETRIES + 1):
-        attempt_results: dict[str, str] = {}
+        click_result_tab(SKILLS_TAB_POS, "Skills")
+        partial_results[args.output_column] = click_download_and_read(
+            section_header=SKILLS_SECTION_HEADER,
+            tab_name="Skills",
+            allow_empty=False,
+        )
+
+        click_result_tab(APPS_TOOLS_TAB_POS, "Apps & Tools")
+        partial_results[args.apps_tools_column] = click_download_and_read(
+            section_header=APPS_TOOLS_SECTION_HEADER,
+            tab_name="Apps & Tools",
+            allow_empty=True,
+        )
+
+        reset_page()
+        return True, partial_results, ""
+
+    except Exception as exc:
+        error_message = str(exc)
+
         try:
-            print(f"  Attempt {attempt}/{MAX_RETRIES}")
-
-            paste_text(text)
-            time.sleep(WAIT_FOR_RESULTS)
-
-            click_result_tab(SKILLS_TAB_POS, "Skills")
-            attempt_results[args.output_column] = click_download_and_read(
-                section_header=SKILLS_SECTION_HEADER,
-                tab_name="Skills",
-                allow_empty=False,
-            )
-
-            click_result_tab(APPS_TOOLS_TAB_POS, "Apps & Tools")
-            attempt_results[args.apps_tools_column] = click_download_and_read(
-                section_header=APPS_TOOLS_SECTION_HEADER,
-                tab_name="Apps & Tools",
-                allow_empty=True,
-            )
-
-            print(f"  Skills: {attempt_results[args.output_column]}")
-            print(f"  Apps & Tools: {attempt_results[args.apps_tools_column]}")
             reset_page()
-            return True, attempt_results, ""
+        except Exception:
+            pass
 
-        except Exception as exc:
-            partial_results.update(attempt_results)
-            last_error = str(exc)
-
-            print(f"  Error: {last_error}")
-
-            try:
-                reset_page()
-            except Exception:
-                pass
-
-            time.sleep(1.5)
-
-    print(f"  Failed after retries: {last_error}")
-    return False, partial_results, last_error
+        time.sleep(1.5)
+        return False, partial_results, error_message
 
 
 def apply_unique_results_to_full_dataframe(
@@ -557,7 +454,6 @@ def process_single_row(
     print(f"Processing physical row index {args.row_index}")
 
     if current_status == "success" and not args.force:
-        print("Row already marked success. Use --force to rerun it.")
         return
 
     success, partial_results, error_message = run_extraction_for_text(
@@ -571,47 +467,9 @@ def process_single_row(
         df.at[row_label, args.status_column] = "success"
     else:
         df.at[row_label, args.status_column] = f"error: {error_message}"
+        print(f"Error on row {args.row_index}: {error_message}")
 
-    save_dataframe(df, input_path, output_path, args.in_place)
-    print(f"Saved output to: {output_path}")
-
-
-def process_all_unique_rows(
-    df: pd.DataFrame,
-    args: argparse.Namespace,
-    input_path: Path,
-    output_path: Path,
-) -> None:
-    unique_df = build_unique_rows_dataframe(df, args)
-
-    print(f"Unique descriptions to process: {len(unique_df)}")
-
-    for position, (row_label, row) in enumerate(unique_df.iterrows(), start=1):
-        current_status = str(row[args.status_column]).strip().lower()
-        if current_status == "success" and not args.force:
-            continue
-
-        identifier = format_identifier(row[args.id_column])
-        text = str(row[args.text_column])
-
-        print(f"Processing unique row {position}/{len(unique_df)}")
-        success, partial_results, error_message = run_extraction_for_text(
-            identifier=identifier,
-            text=text,
-            args=args,
-        )
-
-        apply_partial_results(unique_df, row_label, partial_results)
-        if success:
-            unique_df.at[row_label, args.status_column] = "success"
-        else:
-            unique_df.at[row_label, args.status_column] = f"error: {error_message}"
-
-        updated_full_df = apply_unique_results_to_full_dataframe(df, unique_df, args)
-        df.loc[:, get_result_columns(args)] = updated_full_df[get_result_columns(args)]
-
-        save_dataframe(df, input_path, output_path, args.in_place)
-
+    save_dataframe(df, input_path, output_path)
     print(f"Saved output to: {output_path}")
 
 
@@ -627,9 +485,8 @@ def process_batch_rows(
     unique_df = build_unique_rows_dataframe(batch_df, args)
 
     print(f"Processing physical rows {start_row} to {end_row - 1}")
-    print(f"Unique descriptions to process in batch: {len(unique_df)}")
 
-    for position, (row_label, row) in enumerate(unique_df.iterrows(), start=1):
+    for row_label, row in unique_df.iterrows():
         current_status = str(row[args.status_column]).strip().lower()
         if current_status == "success" and not args.force:
             continue
@@ -637,7 +494,6 @@ def process_batch_rows(
         identifier = format_identifier(row[args.id_column])
         text = str(row[args.text_column])
 
-        print(f"Processing batch unique row {position}/{len(unique_df)}")
         success, partial_results, error_message = run_extraction_for_text(
             identifier=identifier,
             text=text,
@@ -649,9 +505,10 @@ def process_batch_rows(
             unique_df.at[row_label, args.status_column] = "success"
         else:
             unique_df.at[row_label, args.status_column] = f"error: {error_message}"
+            print(f"Error on row {row_label}: {error_message}")
 
         apply_unique_results_to_row_subset(df, batch_df.index, unique_df, args)
-        save_dataframe(df, input_path, output_path, args.in_place)
+        save_dataframe(df, input_path, output_path)
 
     print(f"Saved output to: {output_path}")
 
@@ -671,10 +528,13 @@ def main() -> None:
     df = normalize_dataframe(df, args)
 
     resolved_start_row = None
-    if is_batch_resume_mode(args):
+    if args.row_index is None:
         resolved_start_row, _ = resolve_batch_row_window(df, args)
 
-    print_resolved_config(args, input_path, load_path, output_path, df, resolved_start_row)
+    if args.row_index is None and resolved_start_row is None:
+        print("No pending rows found. Nothing to do.")
+        return
+
     require_runtime_dependencies()
 
     print("Starting in 3 seconds. Keep the browser fixed and do not touch the mouse or keyboard.")
@@ -682,11 +542,12 @@ def main() -> None:
 
     if args.row_index is not None:
         process_single_row(df, args, input_path, output_path)
-    elif is_batch_resume_mode(args):
-        start_row, end_row = resolve_batch_row_window(df, args)
-        process_batch_rows(df, args, input_path, output_path, start_row, end_row)
     else:
-        process_all_unique_rows(df, args, input_path, output_path)
+        start_row, end_row = resolve_batch_row_window(df, args)
+        if start_row is None or end_row is None:
+            print("No pending rows found. Nothing to do.")
+            return
+        process_batch_rows(df, args, input_path, output_path, start_row, end_row)
 
 
 if __name__ == "__main__":
