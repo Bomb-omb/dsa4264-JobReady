@@ -178,7 +178,6 @@ def ensure_backup(input_path: Path) -> None:
         return
 
     shutil.copy2(input_path, backup_path)
-    print(f"Created backup: {backup_path}")
 
 
 def save_dataframe(
@@ -240,43 +239,6 @@ def resolve_batch_row_window(
         return None, None
     end_row = min(start_row + args.row_count, len(df))
     return start_row, end_row
-
-
-def print_resolved_config(
-    args: argparse.Namespace,
-    input_path: Path,
-    load_path: Path,
-    output_path: Path,
-    df: pd.DataFrame,
-    resolved_start_row: int | None = None,
-) -> None:
-    unique_count = df[args.text_column].nunique(dropna=False)
-    if args.row_index is not None:
-        row_mode = args.row_index
-    else:
-        row_mode = "batch"
-    write_mode = "in-place" if output_path == input_path else "output-file"
-
-    print(f"Running on: {SYSTEM}")
-    print("Resolved config:")
-    print(f"  input_file: {input_path}")
-    print(f"  load_file: {load_path}")
-    print(f"  output_file: {output_path}")
-    print(f"  id_column: {args.id_column}")
-    print(f"  text_column: {args.text_column}")
-    print(f"  output_column: {args.output_column}")
-    print(f"  apps_tools_column: {args.apps_tools_column}")
-    print(f"  status_column: {args.status_column}")
-    print(f"  row_index: {row_mode}")
-    print(f"  write_mode: {write_mode}")
-    if args.row_index is None:
-        print(f"  working_file: {output_path}")
-        print(f"  resolved_start_row: {resolved_start_row}")
-        print(f"  row_count: {args.row_count}")
-    print(f"  total_rows: {len(df)}")
-    print(f"  unique_text_rows: {unique_count}")
-    if output_path == input_path:
-        print(f"  backup_path: {build_backup_path(input_path)}")
 
 
 def get_latest_csv(after_time: float) -> Path | None:
@@ -349,7 +311,6 @@ def paste_text(text: str) -> None:
 
 
 def click_result_tab(tab_pos: tuple[int, int], tab_name: str) -> None:
-    print(f"  Opening {tab_name} tab")
     pyautogui.click(tab_pos)
     time.sleep(WAIT_AFTER_TAB_SWITCH)
 
@@ -400,8 +361,6 @@ def run_extraction_for_text(
     if not text.strip():
         return False, {}, "Text to extract is empty."
 
-    print(f"Processing {identifier}")
-
     partial_results: dict[str, str] = {}
     try:
         paste_text(text)
@@ -421,14 +380,11 @@ def run_extraction_for_text(
             allow_empty=True,
         )
 
-        print(f"  Skills: {partial_results[args.output_column]}")
-        print(f"  Apps & Tools: {partial_results[args.apps_tools_column]}")
         reset_page()
         return True, partial_results, ""
 
     except Exception as exc:
         error_message = str(exc)
-        print(f"  Error: {error_message}")
 
         try:
             reset_page()
@@ -436,7 +392,6 @@ def run_extraction_for_text(
             pass
 
         time.sleep(1.5)
-        print(f"  Failed: {error_message}")
         return False, partial_results, error_message
 
 
@@ -496,7 +451,6 @@ def process_single_row(
     print(f"Processing physical row index {args.row_index}")
 
     if current_status == "success" and not args.force:
-        print("Row already marked success. Use --force to rerun it.")
         return
 
     success, partial_results, error_message = run_extraction_for_text(
@@ -510,6 +464,7 @@ def process_single_row(
         df.at[row_label, args.status_column] = "success"
     else:
         df.at[row_label, args.status_column] = f"error: {error_message}"
+        print(f"Error on row {args.row_index}: {error_message}")
 
     save_dataframe(df, input_path, output_path)
     print(f"Saved output to: {output_path}")
@@ -527,9 +482,8 @@ def process_batch_rows(
     unique_df = build_unique_rows_dataframe(batch_df, args)
 
     print(f"Processing physical rows {start_row} to {end_row - 1}")
-    print(f"Unique descriptions to process in batch: {len(unique_df)}")
 
-    for position, (row_label, row) in enumerate(unique_df.iterrows(), start=1):
+    for row_label, row in unique_df.iterrows():
         current_status = str(row[args.status_column]).strip().lower()
         if current_status == "success" and not args.force:
             continue
@@ -537,7 +491,6 @@ def process_batch_rows(
         identifier = format_identifier(row[args.id_column])
         text = str(row[args.text_column])
 
-        print(f"Processing batch unique row {position}/{len(unique_df)}")
         success, partial_results, error_message = run_extraction_for_text(
             identifier=identifier,
             text=text,
@@ -549,6 +502,7 @@ def process_batch_rows(
             unique_df.at[row_label, args.status_column] = "success"
         else:
             unique_df.at[row_label, args.status_column] = f"error: {error_message}"
+            print(f"Error on row {row_label}: {error_message}")
 
         apply_unique_results_to_row_subset(df, batch_df.index, unique_df, args)
         save_dataframe(df, input_path, output_path)
@@ -574,7 +528,6 @@ def main() -> None:
     if args.row_index is None:
         resolved_start_row, _ = resolve_batch_row_window(df, args)
 
-    print_resolved_config(args, input_path, load_path, output_path, df, resolved_start_row)
     if args.row_index is None and resolved_start_row is None:
         print("No pending rows found. Nothing to do.")
         return

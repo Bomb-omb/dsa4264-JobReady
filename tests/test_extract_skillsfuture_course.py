@@ -1,4 +1,5 @@
 import argparse
+import io
 import unittest
 from unittest import mock
 from pathlib import Path
@@ -409,6 +410,80 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(df.at[0, "extracted_apps_tools"], "Python")
         self.assertEqual(df.at[0, "done"], "success")
 
+    def test_process_single_row_prints_only_row_index_and_save_path_on_success(self) -> None:
+        args = make_args(row_index=0)
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                }
+            ]
+        )
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                return_value=(
+                    True,
+                    {
+                        "extracted_skills": "Programming",
+                        "extracted_apps_tools": "Python",
+                    },
+                    "",
+                ),
+            ),
+            mock.patch.object(course, "save_dataframe"),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            course.process_single_row(df, args, Path("in.csv"), Path("out.csv"))
+
+        self.assertEqual(
+            stdout.getvalue().strip().splitlines(),
+            [
+                "Processing physical row index 0",
+                "Saved output to: out.csv",
+            ],
+        )
+
+    def test_process_single_row_prints_single_error_line_on_failure(self) -> None:
+        args = make_args(row_index=0)
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                }
+            ]
+        )
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                return_value=(False, {"extracted_skills": "Programming"}, "Skills download failed."),
+            ),
+            mock.patch.object(course, "save_dataframe"),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            course.process_single_row(df, args, Path("in.csv"), Path("out.csv"))
+
+        self.assertEqual(
+            stdout.getvalue().strip().splitlines(),
+            [
+                "Processing physical row index 0",
+                "Error on row 0: Skills download failed.",
+                "Saved output to: out.csv",
+            ],
+        )
+
     def test_process_batch_rows_continues_after_failed_row_without_shared_error_state(self) -> None:
         args = make_args(row_count=2)
         df = pd.DataFrame(
@@ -458,6 +533,60 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(save_mock.call_count, 2)
         for call in run_mock.call_args_list:
             self.assertNotIn("error_count", call.kwargs)
+
+    def test_process_batch_rows_prints_only_row_window_error_and_save_path(self) -> None:
+        args = make_args(row_count=2)
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "ACC1701",
+                    "description": "Accounting basics",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                },
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                },
+            ]
+        )
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                side_effect=[
+                    (False, {"extracted_skills": "Accounting"}, "First row failed."),
+                    (
+                        True,
+                        {
+                            "extracted_skills": "Programming",
+                            "extracted_apps_tools": "Python",
+                        },
+                        "",
+                    ),
+                ],
+            ),
+            mock.patch.object(course, "save_dataframe"),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            course.process_batch_rows(df, args, Path("in.csv"), Path("out.csv"), 0, 2)
+
+        lines = stdout.getvalue().strip().splitlines()
+        self.assertEqual(
+            lines,
+            [
+                "Processing physical rows 0 to 1",
+                "Error on row 0: First row failed.",
+                "Saved output to: out.csv",
+            ],
+        )
+        self.assertNotIn("Processing batch unique row", stdout.getvalue())
+        self.assertNotIn("Unique descriptions to process in batch", stdout.getvalue())
 
 
 if __name__ == "__main__":
