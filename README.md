@@ -85,8 +85,8 @@ python extract_skillsfuture.py --help
 ## Using `extract_skillsfuture_course.py`
 
 `extract_skillsfuture_course.py` automates the same SkillsFuture workflow for NUS course descriptions.
-It reads module descriptions from `data/2025-2026_module_clean_with_prereq.csv` and writes results to a
-derived CSV by default so the source file stays untouched.
+It reads module descriptions from `data/2025-2026_module_clean_with_prereq.csv` and, by default,
+updates that same file in place while resuming from the first pending row.
 
 ### Default input and output
 
@@ -96,13 +96,14 @@ derived CSV by default so the source file stays untouched.
 - output column: `extracted_skills`
 - apps/tools column: `extracted_apps_tools`
 - status column: `done`
-- default output file: `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`
+- default write mode: in place on the input CSV
+- optional output file: set with `--output-file`
 
-If the output columns do not exist in the input file, the script creates them automatically in the output.
+If the output columns do not exist in the input file, the script creates them automatically before saving.
 
 ### Test on the first course row
 
-Use this first before a full run:
+Use this first before running a batch:
 
 ```powershell
 python extract_skillsfuture_course.py --row-index 0 --force
@@ -110,53 +111,42 @@ python extract_skillsfuture_course.py --row-index 0 --force
 
 Expected result:
 
-- `data/2025-2026_module_clean_with_prereq_skillsfuture.csv` is created
+- `data/2025-2026_module_clean_with_prereq.csv` is updated in place by default
 - it contains all original module columns plus `extracted_skills`, `extracted_apps_tools`, and `done`
-- row `0` is updated in the derived CSV
+- row `0` is updated in the working CSV
 - `done` becomes `success` only if both tab downloads succeed
 
-### Run the full course file
+### Run the next pending batch
+
+Use this to continue from the first row whose `done` value is `pending` and update only a bounded
+number of physical rows:
 
 ```powershell
-python extract_skillsfuture_course.py
+python extract_skillsfuture_course.py --row-count 10 --output-file data\2025-2026_module_clean_with_prereq_skillsfuture.csv
 ```
 
 Behavior:
 
-- duplicate descriptions are processed once and mapped back to matching rows
-- rows already marked `success` are skipped unless `--force` is used
-- partial results are preserved if one tab succeeds and the other fails
-- the source CSV remains unchanged by default
-
-### Resume from a course code for a fixed number of rows
-
-Use this to continue from a specific module code and update only a bounded batch of physical rows:
-
-```powershell
-python extract_skillsfuture_course.py --start-course-code CS1010 --row-count 10
-```
-
-Behavior:
-
-- the working file becomes `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`
-- if that file already exists, the script loads it first so previous extracted values and `done` statuses are preserved
-- if that file does not exist, the script bootstraps from `data/2025-2026_module_clean_with_prereq.csv` and creates the derived output on save
-- processing starts at the first exact `moduleCode` match and runs for the requested number of physical rows
+- the input CSV is both the load file and the working file by default
+- processing starts at the first physical row whose normalized `done` value is exactly `pending`
+- the script runs for the requested number of physical rows from that starting point
 - duplicate descriptions are deduplicated only inside that selected row window
+- rows already marked `success` inside that batch are skipped unless `--force` is used
+- earlier rows marked `error: ...` are left untouched when finding the resume point
 
-If you need a different derived output target for batch mode, you can override it explicitly:
+If there are no pending rows left, the script exits cleanly without writing anything.
 
-```powershell
-python extract_skillsfuture_course.py --start-course-code CS1010 --row-count 10 --output-file data/custom_skillsfuture.csv
-```
-
-### Optional in-place run
-
-If you explicitly want to update the source CSV instead of writing the derived output file:
+If you want to keep the source CSV untouched, use a separate working file explicitly:
 
 ```powershell
-python extract_skillsfuture_course.py --in-place
+python extract_skillsfuture_course.py --row-count 10 --output-file data/custom_skillsfuture.csv
 ```
 
-This creates a one-time backup at `data/2025-2026_module_clean_with_prereq.backup.csv`.
-`--in-place` cannot be combined with `--start-course-code`.
+When `--output-file` is provided:
+
+- if the output file already exists, the script loads it first and continues from its first pending row
+- if it does not exist, the script bootstraps from the input CSV and writes to the specified output file
+- the source CSV remains unchanged
+
+In default in-place mode, the script creates a one-time backup at
+`data/2025-2026_module_clean_with_prereq.backup.csv`.

@@ -18,9 +18,7 @@ def make_args(**overrides: object) -> argparse.Namespace:
         "apps_tools_column": "extracted_apps_tools",
         "status_column": "done",
         "row_index": None,
-        "start_course_code": None,
         "row_count": None,
-        "in_place": False,
         "force": False,
     }
     values.update(overrides)
@@ -47,15 +45,12 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(result.at[0, "extracted_apps_tools"], "")
         self.assertEqual(result.at[0, "done"], "")
 
-    def test_build_output_path_defaults_to_skillsfuture_suffix(self) -> None:
+    def test_build_output_path_defaults_to_input_path(self) -> None:
         input_path = Path("data/2025-2026_module_clean_with_prereq.csv")
 
-        result = course.build_output_path(input_path, output_file=None, in_place=False)
+        result = course.build_output_path(input_path, output_file=None)
 
-        self.assertEqual(
-            result,
-            Path("data/2025-2026_module_clean_with_prereq_skillsfuture.csv"),
-        )
+        self.assertEqual(result, input_path)
 
     def test_normalize_status_value_defaults_pending(self) -> None:
         self.assertEqual(course.normalize_status_value(None), "pending")
@@ -153,62 +148,56 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(result.at[1, "done"], "success")
         self.assertEqual(result.at[2, "extracted_skills"], "Programming")
 
-    def test_validate_args_accepts_start_course_code_with_row_count(self) -> None:
-        args = make_args(start_course_code="CS1010", row_count=5)
+    def test_validate_args_accepts_row_index_without_row_count(self) -> None:
+        args = make_args(row_index=3)
 
         course.validate_args(args)
 
-    def test_validate_args_rejects_row_index_with_start_course_code(self) -> None:
-        args = make_args(row_index=3, start_course_code="CS1010", row_count=5)
+    def test_validate_args_rejects_row_index_with_row_count(self) -> None:
+        args = make_args(row_index=3, row_count=5)
 
-        with self.assertRaisesRegex(SystemExit, "--row-index cannot be used"):
+        with self.assertRaisesRegex(SystemExit, "--row-index cannot be used with --row-count"):
             course.validate_args(args)
 
-    def test_validate_args_rejects_row_count_without_start_course_code(self) -> None:
-        args = make_args(row_count=5)
+    def test_validate_args_requires_row_count_without_row_index(self) -> None:
+        args = make_args()
 
-        with self.assertRaisesRegex(SystemExit, "--row-count requires --start-course-code"):
+        with self.assertRaisesRegex(SystemExit, "--row-count is required unless --row-index is used"):
             course.validate_args(args)
 
     def test_validate_args_rejects_non_positive_row_count(self) -> None:
-        args = make_args(start_course_code="CS1010", row_count=0)
+        args = make_args(row_count=0)
 
         with self.assertRaisesRegex(SystemExit, "--row-count must be a positive integer"):
             course.validate_args(args)
 
-    def test_validate_args_rejects_in_place_with_start_course_code(self) -> None:
-        args = make_args(start_course_code="CS1010", row_count=5, in_place=True)
-
-        with self.assertRaisesRegex(SystemExit, "--in-place cannot be used"):
-            course.validate_args(args)
-
-    def test_resolve_load_and_output_paths_uses_existing_skillsfuture_file(self) -> None:
+    def test_resolve_load_and_output_paths_defaults_to_input_file(self) -> None:
         temp_path = Path("tmp_path_resolution")
         input_path = temp_path / "modules.csv"
-        output_path = temp_path / "modules_skillsfuture.csv"
 
         with mock.patch.object(Path, "exists", autospec=True) as exists_mock:
-            exists_mock.side_effect = lambda self: self == output_path
+            exists_mock.side_effect = lambda self: self == input_path
             load_path, resolved_output_path = course.resolve_load_and_output_paths(
                 input_path,
-                make_args(start_course_code="CS1010", row_count=5),
+                make_args(row_count=5),
             )
 
-        self.assertEqual(load_path, output_path)
-        self.assertEqual(resolved_output_path, output_path)
+        self.assertEqual(load_path, input_path)
+        self.assertEqual(resolved_output_path, input_path)
 
     def test_resolve_load_and_output_paths_bootstraps_from_input_when_output_missing(self) -> None:
         temp_path = Path("tmp_path_resolution")
         input_path = temp_path / "modules.csv"
+        explicit_output = temp_path / "custom.csv"
 
         with mock.patch.object(Path, "exists", autospec=True, return_value=False):
             load_path, output_path = course.resolve_load_and_output_paths(
                 input_path,
-                make_args(start_course_code="CS1010", row_count=5),
+                make_args(row_count=5, output_file=str(explicit_output)),
             )
 
         self.assertEqual(load_path, input_path)
-        self.assertEqual(output_path, temp_path / "modules_skillsfuture.csv")
+        self.assertEqual(output_path, explicit_output)
 
     def test_resolve_load_and_output_paths_honors_explicit_output_file(self) -> None:
         temp_path = Path("tmp_path_resolution")
@@ -220,7 +209,6 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             load_path, output_path = course.resolve_load_and_output_paths(
                 input_path,
                 make_args(
-                    start_course_code="CS1010",
                     row_count=5,
                     output_file=str(explicit_output),
                 ),
@@ -229,18 +217,18 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(load_path, explicit_output)
         self.assertEqual(output_path, explicit_output)
 
-    def test_resolve_batch_row_window_finds_exact_course_code(self) -> None:
+    def test_resolve_batch_row_window_starts_at_first_pending_row(self) -> None:
         df = pd.DataFrame(
             [
-                {"moduleCode": "ACC1701", "description": "A"},
-                {"moduleCode": "CS1010", "description": "B"},
-                {"moduleCode": "CS1010E", "description": "C"},
+                {"moduleCode": "ACC1701", "description": "A", "done": "success"},
+                {"moduleCode": "CS1010", "description": "B", "done": "pending"},
+                {"moduleCode": "CS1010E", "description": "C", "done": "pending"},
             ]
         )
 
         start_row, end_row = course.resolve_batch_row_window(
             df,
-            make_args(start_course_code="CS1010", row_count=1),
+            make_args(row_count=1),
         )
 
         self.assertEqual(start_row, 1)
@@ -249,15 +237,48 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
     def test_resolve_batch_row_window_caps_at_end_of_file(self) -> None:
         df = pd.DataFrame(
             [
-                {"moduleCode": "ACC1701", "description": "A"},
-                {"moduleCode": "CS1010", "description": "B"},
-                {"moduleCode": "CS2030", "description": "C"},
+                {"moduleCode": "ACC1701", "description": "A", "done": "success"},
+                {"moduleCode": "CS1010", "description": "B", "done": "pending"},
+                {"moduleCode": "CS2030", "description": "C", "done": "pending"},
             ]
         )
 
         start_row, end_row = course.resolve_batch_row_window(
             df,
-            make_args(start_course_code="CS1010", row_count=10),
+            make_args(row_count=10),
+        )
+
+        self.assertEqual(start_row, 1)
+        self.assertEqual(end_row, 3)
+
+    def test_resolve_batch_row_window_returns_none_when_no_pending_rows(self) -> None:
+        df = pd.DataFrame(
+            [
+                {"moduleCode": "ACC1701", "description": "A", "done": "success"},
+                {"moduleCode": "CS1010", "description": "B", "done": "error: failed"},
+            ]
+        )
+
+        start_row, end_row = course.resolve_batch_row_window(
+            df,
+            make_args(row_count=10),
+        )
+
+        self.assertIsNone(start_row)
+        self.assertIsNone(end_row)
+
+    def test_resolve_batch_row_window_ignores_earlier_error_rows(self) -> None:
+        df = pd.DataFrame(
+            [
+                {"moduleCode": "ACC1701", "description": "A", "done": "error: failed"},
+                {"moduleCode": "CS1010", "description": "B", "done": "pending"},
+                {"moduleCode": "CS2030", "description": "C", "done": "success"},
+            ]
+        )
+
+        start_row, end_row = course.resolve_batch_row_window(
+            df,
+            make_args(row_count=2),
         )
 
         self.assertEqual(start_row, 1)
@@ -351,7 +372,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             text="Intro programming",
             args=args,
         )
-        save_mock.assert_called_once_with(df, input_path, output_path, False)
+        save_mock.assert_called_once_with(df, input_path, output_path)
 
     def test_process_single_row_writes_success_status(self) -> None:
         args = make_args(row_index=0)
@@ -388,8 +409,8 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(df.at[0, "extracted_apps_tools"], "Python")
         self.assertEqual(df.at[0, "done"], "success")
 
-    def test_process_all_unique_rows_continues_after_failed_row_without_shared_error_state(self) -> None:
-        args = make_args()
+    def test_process_batch_rows_continues_after_failed_row_without_shared_error_state(self) -> None:
+        args = make_args(row_count=2)
         df = pd.DataFrame(
             [
                 {
@@ -427,7 +448,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             ) as run_mock,
             mock.patch.object(course, "save_dataframe") as save_mock,
         ):
-            course.process_all_unique_rows(df, args, Path("in.csv"), Path("out.csv"))
+            course.process_batch_rows(df, args, Path("in.csv"), Path("out.csv"), 0, 2)
 
         self.assertEqual(df.at[0, "extracted_skills"], "Accounting")
         self.assertEqual(df.at[0, "done"], "error: First row failed.")
