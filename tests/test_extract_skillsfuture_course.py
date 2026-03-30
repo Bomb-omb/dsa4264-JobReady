@@ -131,15 +131,17 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         )
 
     def test_run_extraction_for_text_rejects_empty_text(self) -> None:
-        success, partial_results, error_message = course.run_extraction_for_text(
+        success, partial_results, error_message, error_count = course.run_extraction_for_text(
             identifier="CS1010",
             text="   ",
             args=make_args(),
+            error_count=3,
         )
 
         self.assertFalse(success)
         self.assertEqual(partial_results, {})
         self.assertEqual(error_message, "Text to extract is empty.")
+        self.assertEqual(error_count, 3)
 
     def test_run_extraction_for_text_returns_partial_results_on_failure(self) -> None:
         args = make_args()
@@ -155,17 +157,48 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             mock.patch.object(course, "reset_page") as reset_mock,
             mock.patch.object(course.time, "sleep"),
         ):
-            success, partial_results, error_message = course.run_extraction_for_text(
+            success, partial_results, error_message, error_count = course.run_extraction_for_text(
                 identifier="CS1010",
                 text="Intro programming",
                 args=args,
+                error_count=0,
             )
 
         self.assertFalse(success)
         self.assertEqual(partial_results, {"extracted_skills": "Programming"})
         self.assertEqual(error_message, "Apps & Tools download failed.")
+        self.assertEqual(error_count, 1)
         self.assertEqual(download_mock.call_count, 2)
         reset_mock.assert_called_once()
+
+    def test_run_extraction_for_text_refreshes_and_resets_error_count_at_threshold(self) -> None:
+        args = make_args()
+
+        with (
+            mock.patch.object(course, "paste_text"),
+            mock.patch.object(course, "click_result_tab"),
+            mock.patch.object(
+                course,
+                "click_download_and_read",
+                side_effect=RuntimeError("Skills download failed."),
+            ),
+            mock.patch.object(course, "refresh_website") as refresh_mock,
+            mock.patch.object(course, "reset_page") as reset_mock,
+            mock.patch.object(course.time, "sleep"),
+        ):
+            success, partial_results, error_message, error_count = course.run_extraction_for_text(
+                identifier="CS1010",
+                text="Intro programming",
+                args=args,
+                error_count=course.ERROR_REFRESH_THRESHOLD - 1,
+            )
+
+        self.assertFalse(success)
+        self.assertEqual(partial_results, {})
+        self.assertEqual(error_message, "Skills download failed.")
+        self.assertEqual(error_count, 0)
+        refresh_mock.assert_called_once()
+        self.assertEqual(reset_mock.call_count, 2)
 
     def test_apply_unique_results_maps_duplicate_descriptions(self) -> None:
         args = make_args()
@@ -431,7 +464,12 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             mock.patch.object(
                 course,
                 "run_extraction_for_text",
-                return_value=(False, {"extracted_skills": "Programming"}, "Skills download failed."),
+                return_value=(
+                    False,
+                    {"extracted_skills": "Programming"},
+                    "Skills download failed.",
+                    1,
+                ),
             ) as run_mock,
             mock.patch.object(course, "save_dataframe") as save_mock,
         ):
@@ -444,6 +482,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             identifier="CS1010",
             text="Intro programming",
             args=args,
+            error_count=0,
         )
         save_mock.assert_called_once_with(df, input_path, output_path)
 
@@ -472,6 +511,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
                         "extracted_apps_tools": "Python",
                     },
                     "",
+                    0,
                 ),
             ),
             mock.patch.object(course, "save_dataframe"),
@@ -507,6 +547,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
                         "extracted_apps_tools": "Python",
                     },
                     "",
+                    0,
                 ),
             ),
             mock.patch.object(course, "save_dataframe"),
@@ -540,7 +581,12 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             mock.patch.object(
                 course,
                 "run_extraction_for_text",
-                return_value=(False, {"extracted_skills": "Programming"}, "Skills download failed."),
+                return_value=(
+                    False,
+                    {"extracted_skills": "Programming"},
+                    "Skills download failed.",
+                    1,
+                ),
             ),
             mock.patch.object(course, "save_dataframe"),
             mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
@@ -556,7 +602,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             ],
         )
 
-    def test_process_batch_rows_continues_after_failed_row_without_shared_error_state(self) -> None:
+    def test_process_batch_rows_passes_shared_error_count_between_rows(self) -> None:
         args = make_args(row_count=2)
         df = pd.DataFrame(
             [
@@ -582,7 +628,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
                 course,
                 "run_extraction_for_text",
                 side_effect=[
-                    (False, {"extracted_skills": "Accounting"}, "First row failed."),
+                    (False, {"extracted_skills": "Accounting"}, "First row failed.", 1),
                     (
                         True,
                         {
@@ -590,6 +636,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
                             "extracted_apps_tools": "Python",
                         },
                         "",
+                        0,
                     ),
                 ],
             ) as run_mock,
@@ -603,8 +650,10 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(df.at[1, "extracted_apps_tools"], "Python")
         self.assertEqual(df.at[1, "done"], "success")
         self.assertEqual(save_mock.call_count, 2)
-        for call in run_mock.call_args_list:
-            self.assertNotIn("error_count", call.kwargs)
+        self.assertEqual(
+            [call.kwargs["error_count"] for call in run_mock.call_args_list],
+            [0, 1],
+        )
 
     def test_process_batch_rows_prints_only_row_window_error_and_save_path(self) -> None:
         args = make_args(row_count=2)
@@ -632,7 +681,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
                 course,
                 "run_extraction_for_text",
                 side_effect=[
-                    (False, {"extracted_skills": "Accounting"}, "First row failed."),
+                    (False, {"extracted_skills": "Accounting"}, "First row failed.", 1),
                     (
                         True,
                         {
@@ -640,6 +689,7 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
                             "extracted_apps_tools": "Python",
                         },
                         "",
+                        0,
                     ),
                 ],
             ),

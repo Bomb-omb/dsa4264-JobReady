@@ -37,6 +37,9 @@ WAIT_AFTER_RESET = 2
 WAIT_AFTER_TAB_SWITCH = 0.5
 WAIT_FOR_RESULTS = 5
 DOWNLOAD_TIMEOUT = 5
+MAX_RETRIES = 1
+ERROR_REFRESH_THRESHOLD = 5
+TIME_FOR_REFRESH = 2
 
 SKILLS_SECTION_HEADER = "extracted_skills"
 APPS_TOOLS_SECTION_HEADER = "extracted_apps_and_tools"
@@ -266,6 +269,19 @@ def wait_for_download(after_time: float, timeout: int = DOWNLOAD_TIMEOUT) -> Pat
     return None
 
 
+def refresh_website() -> None:
+    print("\nAuto-refreshing website...")
+
+    if SYSTEM in {"Darwin", "Windows"}:
+        pyautogui.hotkey(CMD_KEY, "r")
+    else:
+        print(f"Unsupported OS for auto-refresh: {SYSTEM}")
+        return
+
+    time.sleep(TIME_FOR_REFRESH)
+    print(f"Website refreshed on {SYSTEM}.")
+
+
 def extract_section_from_csv(file_path: Path, section_header: str) -> str:
     values = []
     found_section = False
@@ -360,42 +376,67 @@ def run_extraction_for_text(
     identifier: str,
     text: str,
     args: argparse.Namespace,
-) -> tuple[bool, dict[str, str], str]:
+    error_count: int,
+) -> tuple[bool, dict[str, str], str, int]:
     if not text.strip():
-        return False, {}, "Text to extract is empty."
+        return False, {}, "Text to extract is empty.", error_count
 
+    print(f"Processing {identifier}")
+
+    last_error = ""
     partial_results: dict[str, str] = {}
-    try:
-        paste_text(text)
-        time.sleep(WAIT_FOR_RESULTS)
-
-        click_result_tab(SKILLS_TAB_POS, "Skills")
-        partial_results[args.output_column] = click_download_and_read(
-            section_header=SKILLS_SECTION_HEADER,
-            tab_name="Skills",
-            allow_empty=False,
-        )
-
-        click_result_tab(APPS_TOOLS_TAB_POS, "Apps & Tools")
-        partial_results[args.apps_tools_column] = click_download_and_read(
-            section_header=APPS_TOOLS_SECTION_HEADER,
-            tab_name="Apps & Tools",
-            allow_empty=True,
-        )
-
-        reset_page()
-        return True, partial_results, ""
-
-    except Exception as exc:
-        error_message = str(exc)
-
+    for _ in range(1, MAX_RETRIES + 1):
+        attempt_results: dict[str, str] = {}
         try:
-            reset_page()
-        except Exception:
-            pass
+            paste_text(text)
+            time.sleep(WAIT_FOR_RESULTS)
 
-        time.sleep(1.5)
-        return False, partial_results, error_message
+            click_result_tab(SKILLS_TAB_POS, "Skills")
+            attempt_results[args.output_column] = click_download_and_read(
+                section_header=SKILLS_SECTION_HEADER,
+                tab_name="Skills",
+                allow_empty=False,
+            )
+
+            click_result_tab(APPS_TOOLS_TAB_POS, "Apps & Tools")
+            attempt_results[args.apps_tools_column] = click_download_and_read(
+                section_header=APPS_TOOLS_SECTION_HEADER,
+                tab_name="Apps & Tools",
+                allow_empty=True,
+            )
+
+            partial_results.update(attempt_results)
+            print(f"  Skills: {attempt_results[args.output_column]}")
+            print(f"  Apps & Tools: {attempt_results[args.apps_tools_column]}")
+            reset_page()
+            return True, partial_results, "", 0
+
+        except Exception as exc:
+            partial_results.update(attempt_results)
+            last_error = str(exc)
+            error_count += 1
+
+            print(f"  Error: {last_error}")
+            print(f"  Current error count: {error_count}")
+
+            if error_count >= ERROR_REFRESH_THRESHOLD:
+                print("Too many errors. Refreshing website.")
+                refresh_website()
+                error_count = 0
+                try:
+                    reset_page()
+                except Exception:
+                    pass
+
+            try:
+                reset_page()
+            except Exception:
+                pass
+
+            time.sleep(1.5)
+
+    print(f"  Failed after retries: {last_error}")
+    return False, partial_results, last_error, error_count
 
 
 def apply_unique_results_to_full_dataframe(
@@ -456,10 +497,12 @@ def process_single_row(
     if current_status == "success" and not args.force:
         return
 
-    success, partial_results, error_message = run_extraction_for_text(
+    error_count = 0
+    success, partial_results, error_message, _ = run_extraction_for_text(
         identifier=identifier,
         text=text,
         args=args,
+        error_count=error_count,
     )
 
     apply_partial_results(df, row_label, partial_results)
@@ -483,6 +526,7 @@ def process_batch_rows(
 ) -> None:
     batch_df = df.iloc[start_row:end_row].copy()
     unique_df = build_unique_rows_dataframe(batch_df, args)
+    error_count = 0
 
     print(f"Processing physical rows {start_row} to {end_row - 1}")
 
@@ -494,10 +538,11 @@ def process_batch_rows(
         identifier = format_identifier(row[args.id_column])
         text = str(row[args.text_column])
 
-        success, partial_results, error_message = run_extraction_for_text(
+        success, partial_results, error_message, error_count = run_extraction_for_text(
             identifier=identifier,
             text=text,
             args=args,
+            error_count=error_count,
         )
 
         apply_partial_results(unique_df, row_label, partial_results)
