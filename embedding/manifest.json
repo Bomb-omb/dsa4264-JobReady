@@ -14,8 +14,8 @@
     "courses": "embedding\\courses_embeddings.jsonl"
   },
   "counts": {
-    "jobs": 1589,
-    "skills": 2897,
+    "jobs": 1587,
+    "skills": 4401,
     "courses": 5470
   }
 }
