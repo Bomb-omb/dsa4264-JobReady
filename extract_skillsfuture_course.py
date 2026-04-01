@@ -1,3 +1,4 @@
+from __future__ import annotations
 import argparse
 import platform
 import shutil
@@ -26,11 +27,11 @@ DEFAULT_STATUS_COLUMN = "done"
 DOWNLOAD_DIR = Path.home() / "Downloads"
 
 # Approximate positions based on the current Edge layout in your screenshots.
-TEXTBOX_POS = (650, 620)
-SKILLS_TAB_POS = (1045, 444)
-APPS_TOOLS_TAB_POS = (1188, 444)
-DOWNLOAD_BTN_POS = (1010, 510)
-RESET_BTN_POS = (665, 960)
+TEXTBOX_POS = (472, 562)
+SKILLS_TAB_POS = (1391, 569)
+APPS_TOOLS_TAB_POS = (1588, 565)
+DOWNLOAD_BTN_POS = (1353, 664)
+RESET_BTN_POS = (816, 1339)
 
 WAIT_AFTER_PASTE = 2
 WAIT_AFTER_RESET = 2
