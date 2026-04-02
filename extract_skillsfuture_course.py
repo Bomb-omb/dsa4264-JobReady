@@ -27,11 +27,11 @@ DEFAULT_STATUS_COLUMN = "done"
 DOWNLOAD_DIR = Path.home() / "Downloads"
 
 # Approximate positions based on the current Edge layout in your screenshots.
-TEXTBOX_POS = (472, 562)
-SKILLS_TAB_POS = (1391, 569)
-APPS_TOOLS_TAB_POS = (1588, 565)
-DOWNLOAD_BTN_POS = (1353, 664)
-RESET_BTN_POS = (816, 1339)
+TEXTBOX_POS = (650, 620)
+SKILLS_TAB_POS = (1045, 444)
+APPS_TOOLS_TAB_POS = (1188, 444)
+DOWNLOAD_BTN_POS = (1010, 510)
+RESET_BTN_POS = (665, 960)
 
 WAIT_AFTER_PASTE = 2
 WAIT_AFTER_RESET = 2
@@ -373,6 +373,26 @@ def apply_partial_results(
         target_df.at[row_label, column_name] = value
 
 
+def attempt_tab_extraction(
+    tab_pos: tuple[int, int],
+    tab_name: str,
+    section_header: str,
+    allow_empty: bool,
+) -> tuple[str | None, str | None]:
+    try:
+        click_result_tab(tab_pos, tab_name)
+        return (
+            click_download_and_read(
+                section_header=section_header,
+                tab_name=tab_name,
+                allow_empty=allow_empty,
+            ),
+            None,
+        )
+    except Exception as exc:
+        return None, str(exc)
+
+
 def run_extraction_for_text(
     identifier: str,
     text: str,
@@ -392,25 +412,33 @@ def run_extraction_for_text(
             paste_text(text)
             time.sleep(WAIT_FOR_RESULTS)
 
-            click_result_tab(SKILLS_TAB_POS, "Skills")
-            attempt_results[args.output_column] = click_download_and_read(
-                section_header=SKILLS_SECTION_HEADER,
+            skills_value, skills_error = attempt_tab_extraction(
+                tab_pos=SKILLS_TAB_POS,
                 tab_name="Skills",
+                section_header=SKILLS_SECTION_HEADER,
                 allow_empty=False,
             )
+            if skills_value is not None:
+                attempt_results[args.output_column] = skills_value
 
-            click_result_tab(APPS_TOOLS_TAB_POS, "Apps & Tools")
-            attempt_results[args.apps_tools_column] = click_download_and_read(
-                section_header=APPS_TOOLS_SECTION_HEADER,
+            apps_tools_value, apps_tools_error = attempt_tab_extraction(
+                tab_pos=APPS_TOOLS_TAB_POS,
                 tab_name="Apps & Tools",
+                section_header=APPS_TOOLS_SECTION_HEADER,
                 allow_empty=True,
             )
+            if apps_tools_value is not None:
+                attempt_results[args.apps_tools_column] = apps_tools_value
 
             partial_results.update(attempt_results)
-            print(f"  Skills: {attempt_results[args.output_column]}")
-            print(f"  Apps & Tools: {attempt_results[args.apps_tools_column]}")
-            reset_page()
-            return True, partial_results, "", 0
+            if skills_error is None and apps_tools_error is None:
+                print(f"  Skills: {attempt_results[args.output_column]}")
+                print(f"  Apps & Tools: {attempt_results[args.apps_tools_column]}")
+                reset_page()
+                return True, partial_results, "", 0
+
+            last_error = skills_error or apps_tools_error or "Unknown extraction error."
+            raise RuntimeError(last_error)
 
         except Exception as exc:
             partial_results.update(attempt_results)

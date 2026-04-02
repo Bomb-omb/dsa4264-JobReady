@@ -171,6 +171,66 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
         self.assertEqual(download_mock.call_count, 2)
         reset_mock.assert_called_once()
 
+    def test_run_extraction_for_text_checks_apps_tools_after_skills_failure(self) -> None:
+        args = make_args()
+
+        with (
+            mock.patch.object(course, "paste_text"),
+            mock.patch.object(course, "click_result_tab") as tab_mock,
+            mock.patch.object(
+                course,
+                "click_download_and_read",
+                side_effect=[RuntimeError("Skills download failed."), "Python"],
+            ) as download_mock,
+            mock.patch.object(course, "reset_page") as reset_mock,
+            mock.patch.object(course.time, "sleep"),
+        ):
+            success, partial_results, error_message, error_count = course.run_extraction_for_text(
+                identifier="CS1010",
+                text="Intro programming",
+                args=args,
+                error_count=0,
+            )
+
+        self.assertFalse(success)
+        self.assertEqual(partial_results, {"extracted_apps_tools": "Python"})
+        self.assertEqual(error_message, "Skills download failed.")
+        self.assertEqual(error_count, 1)
+        self.assertEqual(tab_mock.call_count, 2)
+        self.assertEqual(download_mock.call_count, 2)
+        reset_mock.assert_called_once()
+
+    def test_run_extraction_for_text_prefers_skills_error_when_both_tabs_fail(self) -> None:
+        args = make_args()
+
+        with (
+            mock.patch.object(course, "paste_text"),
+            mock.patch.object(course, "click_result_tab"),
+            mock.patch.object(
+                course,
+                "click_download_and_read",
+                side_effect=[
+                    RuntimeError("Skills download failed."),
+                    RuntimeError("Apps & Tools download failed."),
+                ],
+            ) as download_mock,
+            mock.patch.object(course, "reset_page") as reset_mock,
+            mock.patch.object(course.time, "sleep"),
+        ):
+            success, partial_results, error_message, error_count = course.run_extraction_for_text(
+                identifier="CS1010",
+                text="Intro programming",
+                args=args,
+                error_count=0,
+            )
+
+        self.assertFalse(success)
+        self.assertEqual(partial_results, {})
+        self.assertEqual(error_message, "Skills download failed.")
+        self.assertEqual(error_count, 1)
+        self.assertEqual(download_mock.call_count, 2)
+        reset_mock.assert_called_once()
+
     def test_run_extraction_for_text_refreshes_and_resets_error_count_at_threshold(self) -> None:
         args = make_args()
 
@@ -485,6 +545,39 @@ class ExtractSkillsFutureCourseTests(unittest.TestCase):
             error_count=0,
         )
         save_mock.assert_called_once_with(df, input_path, output_path)
+
+    def test_process_single_row_writes_apps_tools_partial_results_on_skills_error(self) -> None:
+        args = make_args(row_index=0)
+        df = pd.DataFrame(
+            [
+                {
+                    "moduleCode": "CS1010",
+                    "description": "Intro programming",
+                    "extracted_skills": "",
+                    "extracted_apps_tools": "",
+                    "done": "pending",
+                }
+            ]
+        )
+
+        with (
+            mock.patch.object(
+                course,
+                "run_extraction_for_text",
+                return_value=(
+                    False,
+                    {"extracted_apps_tools": "Python"},
+                    "Skills download failed.",
+                    1,
+                ),
+            ),
+            mock.patch.object(course, "save_dataframe"),
+        ):
+            course.process_single_row(df, args, Path("in.csv"), Path("out.csv"))
+
+        self.assertEqual(df.at[0, "extracted_skills"], "")
+        self.assertEqual(df.at[0, "extracted_apps_tools"], "Python")
+        self.assertEqual(df.at[0, "done"], "error: Skills download failed.")
 
     def test_process_single_row_writes_success_status(self) -> None:
         args = make_args(row_index=0)
