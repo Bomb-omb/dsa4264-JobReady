@@ -1691,5 +1691,5 @@ ABOUT THE ROLE: We are seeking a detail-oriented and motivated individual to joi
 - Exact-match skill rows retained in this file: 435
 - Decisions retained: keep = 306, manual review = 129
 - Skills removed from `data/acc/audit_tax_accounting_jobs.csv`: 199
-- Extracted skill rows still excluded because no exact taxonomy title matched: 705
+- Extracted skills removed from `data/acc/audit_tax_accounting_jobs.csv` because no exact taxonomy title matched: 705. Basically these skills belong to other sectors like `Infocomm technology`, instead of `Accountancy` and `Financial Services`
 - Skills marked add: 364
