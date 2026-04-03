@@ -1,8 +1,15 @@
 # ACC Skills Review
 
 This review covers exact title matches between each job's `extracted_skills` and `parent_skill_title` in `data/acc/skills_taxo_acc.csv`.
-Skills without an exact taxonomy title match are excluded from the table review.
 The tables below also include `add` rows for clearly supported taxonomy skills that are currently missing from `extracted_skills`.
+
+## Aggregate Summary
+
+- Reviewed jobs: 98
+- Total number of skills for all jobs: 670. Of which, 306 were intially included and 364 were added.
+- Total number of extracted skills removed from `data/acc/audit_tax_accounting_jobs.csv` because no exact taxonomy title matched in `data/acc/skills_taxo_acc.csv`: 705. Basically, these skills belong to other sectors like `Infocomm technology`, instead of `Accountancy` and `Financial Services`
+- Total number of skills removed from `data/acc/audit_tax_accounting_jobs.csv` due to irrelevance to this job: 328. Of which, 199 were removed in the first pass of manual reviews and 129 were removed in the second pass
+- Below is the rationale of why skills were kept/added.
 
 ## 1. Corporate secretarial assistant
 
@@ -13,7 +20,6 @@ Responsibilities: Assist with ACRA Annual Returns and IRAS Corporate Tax Filing 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD includes financial statements, bookkeeping, and IRAS filing, which directly relies on accounting standards. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The role touches financial records, but the JD does not clearly require analytical review. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | Prepare financial statements and an annual financial report, which directly supports formal reporting. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | ACRA annual returns and IRAS corporate tax filing directly support statutory tax compliance. |
 
@@ -27,7 +33,6 @@ At least 1 to 2 years of related working experience Diploma/Degree in Finance or
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly references SFRS and compliance with accounting principles. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | keep | The JD describes delivering external auditing services and performing audit strategy and fieldwork. |
-| Financial Reporting Quality | Establish internal control framework for audit purposes | manual review | The JD mentions compliance with accounting principles, but not building an internal-control framework. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | The JD explicitly references external auditing services and professional standards. |
 | Engagement Planning | Develop engagement plans which describe the nature, timing and extent of planned engagement procedures | add | Planning engagements and audit strategies directly matches engagement planning. |
 | Risk Assessment | Perform assessment of risks, including fraud risks, through understanding the client's business | add | The JD explicitly says to develop risk assessments for each assignment. |
@@ -40,9 +45,6 @@ Job Description & Requirements Job Highlights · Friendly and caring colleagues 
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Corporate and Business Law | Respond to the changes in business laws and regulations | manual review | The JD involves the Income Tax Act and audit compliance, but not broad business-law work. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The role prepares audited financial statements, but statement analysis is not stated directly. |
-| Strategy Planning | Develop organisational strategies and policies by analysing the impact of internal and external influencing factors and seeking consultation from relevant stakeholders. | manual review | The JD includes audit planning and strategy, but only within audit engagement scope. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | add | Preparing audited financial statements in accordance with SFRS directly requires accounting standards. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | Preparing audited financial statements directly supports financial reporting. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | Statutory and special audits with audit procedures directly support auditing standards. |
@@ -61,8 +63,6 @@ ACCOUNTS EXECUTIVE Responsibilities · You would be involved in the preparation 
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Account Management | Manage, maintain and grow the sales and relationships with a specific customer or set of accounts. This includes in-depth customer engagement, relationship-building and provision of quality solutions and service to address customers' needs efficiently and generate revenue. | manual review | The JD mentions long-term client relationships, but not account growth or sales ownership. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The role prepares schedules and reports, but explicit analytical review is not stated. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | add | Full sets of accounts and financial reports directly rely on accounting standards. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | The JD explicitly mentions preparing schedules and reports for management and the annual financial report. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | GST submissions and tax computations directly support tax compliance. |
@@ -76,8 +76,6 @@ Responsibilities · Provide statutory audit services and compilation of financia
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The JD mentions compilation of financial statements and audit procedures, but not explicit analysis. |
-| Quality Assurance | Develop, implement and monitor practice of clear quality expectations and standards aligned to the organisation's values and business objectives | manual review | The JD is about statutory audit services, but not explicit quality-assurance ownership. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | add | Statutory audit services and compilation of financial statements directly require accounting standards. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | Performing audit procedures and assurance work directly supports auditing standards. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly says to perform audit procedures and related work. |
@@ -95,7 +93,6 @@ KEY JOB PURPOSE The successful candidate will be part of our company and contrib
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions monthly financial reporting and full sets of financial statements. |
 | Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | keep | The JD explicitly includes budgeting, forecasting, and analysis. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD includes invoice processing, journal entries, reimbursements, and payables. |
-| Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | manual review | The JD clearly covers reporting and analysis, but month-end closing is not stated explicitly. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | add | Budgeting, forecasting, and analysis are explicitly stated in the JD. |
 | Financial Planning | Evaluate and develop budget in line with organisation's strategies and plans | add | Budgeting and forecasting directly support financial planning. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | Managing full sets of accounts and journal entries directly supports transactional accounting. |
@@ -110,7 +107,6 @@ Job Description · Perform statutory audits of financial statements, due diligen
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD focuses on statutory audits of financial statements and compliance with standards. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly includes statutory audits of financial statements and analytical review. |
-| Business Acumen | Assess the impact of changes in the business organisation, environment, and industry | manual review | The role needs business understanding, but the JD does not clearly call for broader business-impact assessment. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | Statutory audits, due diligence, and assurance engagements directly support auditing standards. |
 | Engagement Planning | Develop engagement plans which describe the nature, timing and extent of planned engagement procedures | add | The JD explicitly mentions audit sections including planning. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | Fieldwork and assurance engagement work directly match engagement execution. |
@@ -154,9 +150,6 @@ Job Title: Accounts Assistant Overview We are seeking a detail-oriented and moti
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The role maintains accurate financial records and supports month-end reporting. |
-| Account Management | Manage, maintain and grow the sales and relationships with a specific customer or set of accounts. This includes in-depth customer engagement, relationship-building and provision of quality solutions and service to address customers' needs efficiently and generate revenue. | manual review | The JD mentions vendors and customers, but not account ownership or growth. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD includes reporting and closing, but not explicit analytical review. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The role supports month-end closing and reporting, but statement analysis is not stated directly. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The role explicitly covers data entry, invoices, payments, and reconciliations. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | Month-end closing and basic financial reporting directly support financial reporting. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end closing activities are explicitly stated. |
@@ -171,13 +164,9 @@ About the Role: We are looking for a Junior Account Executive (Finance) to join 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly says the role handles financial reporting and supports financial statements. |
-| Account Management | Manage, maintain and grow the sales and relationships with a specific customer or set of accounts. This includes in-depth customer engagement, relationship-building and provision of quality solutions and service to address customers' needs efficiently and generate revenue. | manual review | The role coordinates with internal teams, but not account-growth work. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | AP, AR, journal entries, and bank reconciliations are core transaction-processing tasks. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly requires compliance with accounting standards. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The role involves reporting and closing, but not explicit analytical review. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | keep | Month-end closing is directly stated in the JD. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The role coordinates outstanding receivables and internal teams, but not formal requirements analysis. |
-| Finance Business Partnering | Generate finance-related insights to support the business in a strategic manner | manual review | The role works with internal teams, but not as a clear finance-business-partner function. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | AP, AR, journal entries, and bank reconciliations directly support transactional accounting. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | add | Preparing financial statements and audit schedules directly support statement review work. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | GST submissions and compliance with company policies and standards directly support tax compliance. |
@@ -194,8 +183,6 @@ Job Responsibilities: Assist in daily accounting operations, including data entr
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting principles and financial processes. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD includes month-end closing and basic financial reporting. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The role handles invoices, payment vouchers, receivables, and payables. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The JD involves closing and reporting, but not explicit statement analysis. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The role is finance-support work, but analytical review is not clearly stated. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions month-end closing. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | Bookkeeping, invoices, payments, receivables, and payables directly support transactional accounting. |
 
@@ -221,9 +208,6 @@ Assist in internal audit and review of financial records, including student fee 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD includes reviewing financial records, reconciliations, and accounting reviews. |
-| Internal Audit Function Management | Develop and manage the Internal Audit function | manual review | The role supports internal audit work, but does not manage the function. |
-| Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | manual review | The JD mentions audit schedules and management reports, but not formal reporting ownership. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD includes review of records and discrepancies, but not explicit financial analysis. |
 | Internal Audit Engagement Execution | Execute and review internal audit engagements, document and communicate findings in accordance with the International Professional Practices Framework | add | The JD explicitly says to assist in internal audit and review of financial records. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | Reviewing internal controls directly supports internal controls. |
 | Engagement Completion and Reporting | Perform procedures involved prior to expressing an opinion | add | Preparing audit schedules, summaries, and reports directly supports reporting. |
@@ -249,8 +233,6 @@ Our esteemed client in the Auditing & Taxation industry is seeking a Audit Assoc
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Information Gathering and Analysis | Collect and analyse information and data to obtain business insights for business activities | manual review | The JD clearly requires working papers, due diligence, and client information gathering, but not business-insight analysis. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The JD includes drafting financial statements, but the emphasis is audit execution rather than analysis. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | Planning, execution, and completion of audit engagements with substantive testing directly support auditing standards. |
 | Engagement Planning | Develop engagement plans which describe the nature, timing and extent of planned engagement procedures | add | The JD explicitly says to support the planning of audit engagements. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | Fieldwork and substantive testing directly match engagement execution. |
@@ -333,9 +315,7 @@ Job Description Accounting & Financial Reporting Maintain full set of accounts, 
 |---|---|---|---|
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly requires monthly, quarterly, and annual financial reports. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly references recording transactions in accordance with accounting standards. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The role mentions process improvements and internal controls, but not explicit requirements analysis. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | The JD explicitly covers GST returns and statutory tax compliance. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The JD includes balance-sheet reconciliations and schedules, but not explicit statement analysis. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly includes invoices, payments, receipts, and receivables. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | Cash flow monitoring and budgeting/forecasting support make this a clear fit. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end closing activities are explicitly stated. |
@@ -369,8 +349,6 @@ Company Overview ABS is one of the leading suppliers of Ironmongery, Signage and
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly emphasises business partnering and relationship maintenance with financial partners. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The role includes strategy, budgeting, and forecasting, but not explicit requirements scoping. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD covers presenting regular financial reports, but not explicit review of statements. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | add | Regulating accounting systems for compliance and efficiency directly supports accounting standards. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | Presenting regular financial reports directly supports financial reporting. |
 | Financial Planning | Evaluate and develop budget in line with organisation's strategies and plans | add | Annual budgeting and mid-year forecasting directly support financial planning. |
@@ -387,7 +365,6 @@ NextPage Solutions specialised in accounting and compliance services for SME cli
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly says the role prepares full sets of accounts and financial statements. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | New-client onboarding and due diligence are adjacent, but not a clear requirements-analysis role. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | add | Preparing financial statements according to FRS directly supports accounting standards. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | Corporate tax computations and GST returns directly support tax compliance. |
 | Tax Computation | Compute Goods and Services Tax, and tax liabilities | add | The JD explicitly mentions corporate tax computations and GST returns. |
@@ -428,9 +405,6 @@ Job Description Position: Accounts Executive - AP Well Established Manufacturing
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | The JD explicitly covers end-to-end AP work, invoice verification, and journal entries, which directly matches transactional accounting. |
-| Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | manual review | The JD mentions collaboration with internal teams and audit support, but it does not clearly show partnership-building as a core responsibility. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD includes AP reporting and reconciliations, but it does not clearly require analytical review of financial performance. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The JD mentions balance sheet schedules and reporting, but it does not clearly call for formal financial statement analysis. |
 | Financial Transactions | Prepare business documentation and cash balances | add | End-to-end AP work, invoice verification, and payment processing directly involve financial transactions. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | The job explicitly asks for AP reporting activities, including reconciliations and balance sheet schedules. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The role mentions month-end closing and related AP schedules. |
@@ -481,11 +455,6 @@ About Red Alpha Red Alpha is a next-generation cybersecurity talent and services
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly centers on billing, payments, reconciliations, and keeping cash flowing. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD references P&L, balance sheet, and cash flow, but not explicit analytical review or insight generation. |
-| Business Planning | Design and formulate business plans to achieve business goals | manual review | The JD mentions scaling and process streamlining, but not formal business-plan design. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions streamlining systems and processes, but not explicit requirements analysis. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD says the team will close the books and prepare reports, but it does not clearly say the candidate reviews statements. |
-| Management Decision Making | Make financial decisions based on management reports | manual review | The JD supports business operations and reporting, but it does not explicitly frame the work as decision-making support. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | The role explicitly says to prepare financial reports and close the books. |
 | Financial Transactions | Prepare business documentation and cash balances | add | Invoicing, vendor payments, staff claims, and reconciliations are direct financial transaction work. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The job includes billing, payments, reconciliations, and closing the books. |
@@ -520,10 +489,8 @@ Marymount/ Bishan Mon - Fri 9am-6pm Accounts Payable Perform 3 way match of vend
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD covers balance sheet reconciliation and month-end schedules, but it does not explicitly describe reviewing financial statements. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes AP aging reports, cash flow forecasts, liquidity reporting, and group reporting support. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD is centered on invoice posting, payment runs, reconciliations, and journal entries. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | The JD mentions cash flow forecasts and liquidity reporting, but it is not a bank-style asset-liability management role. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | keep | The JD explicitly mentions month-end closing, balance sheet schedules, and reconciliation work. |
 | Policy Implementation and Revision | Identify priority areas for policy development and evaluate existing policies to determine currency and relevance before implementing policies | keep | The JD explicitly says the AP policy is reviewed and updated in line with directive changes. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | Invoice posting, journal entries, and reconciliations are core transactional accounting work. |
@@ -541,8 +508,6 @@ At Baker Tilly Singapore, we welcome highly motivated and committed individuals 
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | manual review | The role involves audit engagements and accounting matters, but not direct preparation of financial reports. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The role is audit-related, but the JD does not explicitly say it reviews financial statements. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The role explicitly involves planning, performing, and concluding assurance engagements. |
 | Engagement Completion and Reporting | Perform procedures involved prior to expressing an opinion | add | The JD explicitly mentions concluding the engagement and documenting findings. |
 | Information Gathering and Analysis | Collect and analyse information and data to obtain business insights for business activities | add | Researching and documenting facts and findings is direct information-gathering and analysis work. |
@@ -626,12 +591,7 @@ About the Role The incumbent will support daily full-set accounting operations a
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting principles, GST regulations, and compliance requirements. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes month-end and year-end reporting work. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions process follow-up and improvement, but not explicit requirements analysis. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD mentions closing and reporting support, but not a clear statement-review responsibility. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD mentions reporting and process improvement, but not explicit analytical review. |
-| Management Decision Making | Make financial decisions based on management reports | manual review | The JD mentions reports for management review, but not decision-making support. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | The JD explicitly mentions GST returns and Singapore tax regulations. |
-| Engagement Completion and Reporting | Perform procedures involved prior to expressing an opinion | manual review | The JD supports audit documentation and query response, but not the pre-opinion completion process itself. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | keep | The JD explicitly includes month-end and year-end closing activities. |
 | Financial Transactions | Prepare business documentation and cash balances | add | The JD explicitly covers invoices, payments, receipts, reconciliations, and journal entries. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | Daily accounting activities, reconciliations, and month-end close are core transactional accounting work. |
@@ -693,7 +653,6 @@ Pioneer 8.30am - 5.45pm (Mon - Thurs), 8.30am - 5.15pm (Fri) Assist in fee billi
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD includes fee verification, adjustment, and stakeholder liaison on fee structure, which is adjacent to requirements analysis but not a clear example of it. |
 | Financial Transactions | Prepare business documentation and cash balances | add | Fee billing, fee verification, adjustments, and student refunds are direct financial transactions. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions month-end reporting and reconciliation. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | The role includes month-end reporting and fee/billing reporting work. |
@@ -756,9 +715,7 @@ Roles & Responsibilities 1. Being responsible for general ledger accounting and 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly covers preparing financial statements and financial footnotes. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD includes GL account review and statement preparation, but not a clear statement-review mandate. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly references IFRS, accounting standards, and tax regulations. |
-| Financial Reporting Quality | Establish internal control framework for audit purposes | manual review | The JD mentions improving financial information quality, but not a full internal-control framework. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | The JD explicitly mentions financial analysis initiatives and BI financial analysis projects. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | The JD explicitly mentions tax filing and relevant tax regulations. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | The JD explicitly mentions proficiency in SAP systems. |
@@ -853,8 +810,6 @@ Audit Associate Working Days: 5 days / 5.5 days(Saturday half day during peak pe
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD clearly describes audit planning, but it is framed as external financial-statement audit rather than internal audit. |
-| Engagement Quality Control | Set up control procedures for an assurance engagement | manual review | The JD includes audit-programme preparation and control testing, but not explicit engagement-quality control setup. |
 | Engagement Planning | Develop engagement plans which describe the nature, timing and extent of planned engagement procedures | add | The JD explicitly describes developing an audit plan and tailoring audit programmes. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | Performing audit tests of controls and substantive procedures is direct engagement execution. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | The JD explicitly places the work within audit procedures and assurance practice. |
@@ -868,12 +823,8 @@ Job Responsibilities General Ledger & Financial Maintenance · Transaction Manag
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | manual review | The JD covers ledger maintenance and reconciliations, but it does not clearly say the role prepares formal financial reports. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The role is finance-heavy, but the JD does not explicitly assign analytical review of performance or position. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions transaction handling and reconciliations, but not formal requirements scoping or business-case work. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions daily accounting entries, reconciliations, and tax filings, which depend on applying accounting standards. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers recording transactions, AP/AR processing, and reconciliations. |
-| Cost Management | Analyse, plan and manage costs for cost efficiency and expense reduction | manual review | The JD touches finance operations, but it does not clearly assign cost planning or expense reduction. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | The JD explicitly mentions timely tax filing and maintaining accurate financial records under finance controls. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | The JD explicitly mentions timely preparation and filing of tax returns. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | Day-to-day QuickBooks posting, reconciliations, and AP/AR processing directly fit transactional accounting. |
@@ -889,10 +840,8 @@ Financial Management & Reporting Manage the full-cycle accounting process, inclu
 |---|---|---|---|
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions preparing monthly and annual financial statements. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly requires financial statements in compliance with accounting standards. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The JD mentions preparing statements, but not analysing them as a distinct task. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | The JD explicitly mentions compliance with financial regulations and tax requirements. |
 | Financial Planning | Evaluate and develop budget in line with organisation's strategies and plans | keep | The JD explicitly mentions budgeting and forecasting. |
-| Risk Management | Apply organisational policies and procedures to manage and control financial and non-financial risks | manual review | The JD mentions internal controls and audit support, but not broader risk management ownership. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions month-end activities and a full accounting close cycle. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | The JD explicitly says to maintain and improve internal financial controls. |
 | Financial Administration | Ensure healthy finance to aid business growth and operations | add | The role is full-cycle accounting support across statements, budgeting, audits, and controls. |
@@ -907,12 +856,7 @@ About Our Company Join the team at Srisun Express , a rapidly expanding and well
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly covers vendor invoices, payment processing, reconciliations, and AP controls. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | The JD explicitly describes daily AP processing and reconciliation work. |
-| Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | manual review | The role supports finance operations, but the JD does not clearly state formal report preparation. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD involves finance support, but not explicit review of financial statements. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD is operational and transactional, not clearly requirements-analysis driven. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AP processing, invoices, and payment handling. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD mentions reconciliation and AP support, but not explicit analytical insight work. |
-| Financial Statements Analysis | Analyse financial statements in accordance with the applicable frameworks | manual review | The role is finance support, but it does not clearly call for statement analysis. |
 | Financial Administration | Ensure healthy finance to aid business growth and operations | add | The role is finance-department support focused on daily AP processing and vendor reconciliation. |
 
 ## 54. Accounts & Admin Executive #82058
@@ -925,8 +869,6 @@ Job Description Industry/ Organization Type: Management of Companies and Enterpr
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly covers bookkeeping, closing, financial reports, and tax filings. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly mentions AP, AR, invoices, payments, and expense claims. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions daily accounting work and closing support, but not formal requirements analysis. |
-| Audit Compliance | Ensure compliance with corporate policies and guidelines | manual review | The JD mentions audit support, but not clear ownership of compliance controls or policy adherence. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions monthly, quarterly, and yearly financial closing. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | The JD explicitly says to prepare financial reports. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | The JD explicitly mentions GST submissions and tax filings. |
@@ -940,10 +882,8 @@ Company Overview / Employee Value Proposition Genuine CA PAC is a public account
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions audit planning and client work, but not business-requirements scoping. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions preparing audited and unaudited financial statements. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions compliance with statutory requirements and financial reporting. |
-| Financial Reporting Quality | Establish internal control framework for audit purposes | manual review | The JD mentions audit excellence and accuracy, but not specifically building an internal-control framework. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | The JD explicitly covers audit planning, fieldwork, and audit assignments. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | The JD explicitly mentions preparing corporate tax computations and tax filings. |
 | Tax Computation | Compute Goods and Services Tax, and tax liabilities | add | The JD explicitly says to calculate corporate tax liabilities and prepare tax computations. |
@@ -960,8 +900,6 @@ Job Description Industry/ Organization Type: Wholesales Position Title: Accounts
 | Financial Administration | Ensure healthy finance to aid business growth and operations | keep | The JD is a broad accounting-support role covering invoices, reconciliations, and payments. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions compliance with company policies and correct accounting codes. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | The JD explicitly mentions checking compliance with company policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD has some process support and schedule preparation, but not explicit requirements analysis. |
-| Risk Management | Apply organisational policies and procedures to manage and control financial and non-financial risks | manual review | The JD touches controls and compliance, but not broader risk management. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | The JD explicitly mentions compliance checks and control steps around payments and reimbursements. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers invoices, receipts, journals, accruals, and reconciliations. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The JD covers invoices, journals, accruals, prepayments, and reconciliation work. |
@@ -991,10 +929,7 @@ Nexcore is a renowned consultancy firm dedicated to offering comprehensive solut
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The role is accounting-services training, so standards-based bookkeeping is directly relevant. |
-| Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | manual review | The JD mentions accounting support, but not explicit financial statement preparation. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | The JD explicitly frames the business around accounting, tax, and legal compliance issues. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The role is trainee support, but the JD does not clearly describe requirements analysis. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD does not clearly assign analytical review beyond basic accounting support. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The role explicitly covers bookkeeping and accounting support functions. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The role is bookkeeping and accounting support, which directly maps to transactional accounting. |
 | Financial Administration | Ensure healthy finance to aid business growth and operations | add | The JD describes hands-on accounting support functions. |
@@ -1012,7 +947,6 @@ Job Description Industry/ Organization Type: Construction Position Title: Accoun
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | The JD explicitly mentions quarterly GST filings and corporate income tax. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AP/AR and general ledger work. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions monthly, quarterly, and annual financial statements. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD focuses on accounting operations, not requirements analysis. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The JD explicitly covers AP, AR, GL, reconciliations, and bookkeeping transactions. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions monthly, quarterly, and annual statements plus reconciliations. |
 
@@ -1024,7 +958,6 @@ Marymount/ Bishan Mon - Fri 9am-6pm Accounts Payable Perform 3 way match of vend
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD supports AP reconciliations and reporting, but not explicit financial statement review. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions AP aging, cash flow forecast, and group reporting package support. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The role is heavily transaction-processing oriented, including invoices, claims, and reconciliation. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | keep | The JD explicitly mentions monthly closing matters and reconciliation work. |
@@ -1041,12 +974,8 @@ Job Description Industry/ Organization Type: Audit Firm Position Title: Audit As
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD covers audit planning, but it is external statutory audit rather than internal audit planning. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | keep | The JD explicitly mentions Singapore Standards on Auditing and fieldwork. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions drafting full financial statements under SFRS. |
-| Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | manual review | The JD mentions drafting financial statements, but not reviewing them as the core task. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions client information gathering and due diligence, but not requirements analysis. |
-| Audit Frameworks | Develop quality assurance frameworks to meet regulatory requirements | manual review | The role is audit execution, not framework development. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly covers planning, fieldwork, substantive testing, and closing audit engagements. |
 | Engagement Completion and Reporting | Perform procedures involved prior to expressing an opinion | add | The JD explicitly says to close audit engagements and draft financial statements. |
 | Information Gathering and Analysis | Collect and analyse information and data to obtain business insights for business activities | add | The JD explicitly mentions gathering client information and working papers. |
@@ -1060,7 +989,6 @@ Job Description Industry/ Organization Type: Construction Position Title: Accoun
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Financial Administration | Ensure healthy finance to aid business growth and operations | keep | The JD is general finance support with transactions, reconciliations, and close work. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions reconciliation and escalation work, but not formal business analysis. |
 | Financial Transactions | Prepare business documentation and cash balances | add | The JD explicitly says to process daily finance transactions accurately and on time. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The role covers billing, invoicing, payments, collections, and reconciliation work. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions assisting with month and quarter close. |
@@ -1073,7 +1001,6 @@ We are looking for an individual to provide accounting and administrative suppor
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD is support-oriented and does not explicitly describe requirements analysis. |
 | Financial Transactions | Prepare business documentation and cash balances | add | The JD explicitly covers invoice and payment data entry for AR/AP. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The role is accounting support centered on AR/AP entries and processing. |
 | Financial Administration | Ensure healthy finance to aid business growth and operations | add | The role is general accounting and administrative support across finance and HR. |
@@ -1086,8 +1013,6 @@ Audit Associate Working Days: 5 days / 5.5 days(Saturday half day during peak pe
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD mentions audit planning and strategy, but the role is external audit under supervision. |
-| Engagement Quality Control | Set up control procedures for an assurance engagement | manual review | The JD implies supervised audit execution, but not explicit control-procedure setup. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly says to undertake stages of audit work under supervision. |
 
 ## 65. Junior Accountant
@@ -1115,7 +1040,6 @@ Job Description & Requirements Handle full set of accounts including GL and Repo
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions closing, GST submission, bookkeeping, and resolving discrepancies. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | The JD explicitly describes recording and classifying transactions. |
-| Business Innovation and Improvement | Transform businesses through innovation and embrace changes to drive improvements | manual review | The JD mentions improvement areas and better accounting controls, but not broader business transformation. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | add | The JD explicitly mentions reconciliation for compilation of financial reports. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions monthly and yearly closing of books. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | The JD explicitly mentions developing accounting control procedures and best practices. |
@@ -1141,7 +1065,6 @@ Job Scope: Handle partial set of accounts (AP and GL) for multiple operating ent
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly says accounting records and treatment must comply with SOP and accounting standards. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD has workflow and timing requirements, but not explicit requirements analysis. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly says the accounts must be closed on time. |
 | Financial Transactions | Prepare business documentation and cash balances | add | The JD explicitly mentions billing and updating receipts. |
 | Financial Administration | Ensure healthy finance to aid business growth and operations | add | The role is broad accounting support for multiple clients. |
@@ -1157,7 +1080,6 @@ Job Scope: Handle partial set of accounts (AP and GL) for multiple operating ent
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions financial reporting for disclosure and presentation of statements. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | keep | The JD explicitly mentions audit standards and statutory audit work. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | The JD explicitly mentions compliance audits. |
-| Business Acumen | Assess the impact of changes in the business organisation, environment, and industry | manual review | The JD is audit-focused and does not clearly require broader business-environment assessment. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly covers audit procedures, walkthroughs, and test of controls. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | The JD explicitly mentions walkthrough tests and test of controls. |
 
@@ -1172,7 +1094,6 @@ Job Scope: Handle partial set of accounts (AP and GL) for multiple operating ent
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions financial reporting for disclosure and presentation. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | keep | The JD explicitly mentions audit standards and statutory audit work. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | The JD explicitly mentions compliance audits. |
-| Business Acumen | Assess the impact of changes in the business organisation, environment, and industry | manual review | The JD does not clearly require assessing business-environment impact. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly covers audit procedures, walkthroughs, and test of controls. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | The JD explicitly mentions walkthrough tests and test of controls. |
 
@@ -1187,7 +1108,6 @@ Job Scope: Handle partial set of accounts (AP and GL) for multiple operating ent
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions preparing financial reporting for statement disclosure. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | keep | The JD explicitly mentions auditing standards for audits. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | The JD explicitly mentions compliance audits. |
-| Business Acumen | Assess the impact of changes in the business organisation, environment, and industry | manual review | The JD is audit-oriented, but not explicit about broader business-impact assessment. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly covers audit procedures, walkthroughs, and test of controls. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | The JD explicitly mentions walkthrough tests and test of controls. |
 
@@ -1202,9 +1122,6 @@ The Junior Finance Executive supports Pink Apple’s day-to-day finance and acco
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly covers finance and accounting operations with AP, AR, and compliance. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions expense summaries, basic reports, and year-end closing prep. |
 | Cost Management | Analyse, plan and manage costs for cost efficiency and expense reduction | keep | The JD explicitly mentions tracking event-based costs, budgets, and cost control. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions process support and documentation, but not formal requirements analysis. |
-| Finance Business Partnering | Generate finance-related insights to support the business in a strategic manner | manual review | The JD shows cross-functional support, but not explicit strategic finance partnering. |
-| Project Execution and Control | Implement projects in accordance with project plan and deliverables, and monitoring and controlling processes performed to influence project outcomes | manual review | The JD mentions multiple event projects, but not formal project-control ownership. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | add | The JD explicitly mentions GST submission support. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions year-end closing preparation. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The role is AP/AR processing with invoices, payments, claims, and reconciliations. |
@@ -1222,8 +1139,6 @@ Job Description Industry/ Organization Type: Supplier of Security Systems Positi
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly covers full-set accounts, closing, and statements. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly includes invoices, payments, collections, and reconciliations. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions monthly, quarterly, and annual financial statements and management reports. |
-| Audit Compliance | Ensure compliance with corporate policies and guidelines | manual review | The JD mentions audit readiness, but not explicit ownership of compliance controls. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD mentions management reports and reconciliations, but not explicit analytical insight work. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | The JD explicitly mentions month-end and year-end closing. |
 | Transactional Accounting | Apply transactional accounting to record financial events | add | The JD explicitly covers invoices, payments, collections, and reconciliations. |
 | Financial Administration | Ensure healthy finance to aid business growth and operations | add | The role is broad full-set accounting and admin support. |
@@ -1236,7 +1151,6 @@ Job Description Industry/ Organization Type: Construction Position Title: Accoun
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | manual review | The JD mentions basic reports and audit readiness, but not formal financial statement preparation. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AP/AR, journals, reconciliations, and fixed-asset records. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | The JD explicitly mentions data privacy and company policy compliance. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | keep | The JD explicitly mentions SAP and accounting systems/spreadsheets. |
@@ -1255,10 +1169,6 @@ About Us At OA GoC, we are more than just a corporate services firm; we are a st
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions SFRS compliance in audit work and financial statements. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly covers preparation and review of audited financial statements. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions preparing financial statements and audit reports. |
-| Quality Assurance | Develop, implement and monitor practice of clear quality expectations and standards aligned to the organisation's values and business objectives | manual review | The JD stresses accurate, high-quality audit work, but not formal QA ownership. |
-| Financial Reporting Quality | Establish internal control framework for audit purposes | manual review | The JD mentions internal control issues, but not building an internal-control framework. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The role involves audit planning, but it is external audit rather than internal audit planning. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions gathering information and resolving queries, but not formal requirements scoping. |
 | Auditing and Assurance Standards | Use applicable auditing and assurance standards to carry out auditing and assurance activities | add | The JD explicitly mentions SSA and SFRS in audit work. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | The JD explicitly covers audit procedures on multiple balance-sheet areas. |
 | Engagement Completion and Reporting | Perform procedures involved prior to expressing an opinion | add | The JD explicitly mentions audit reports and financial statements preparation. |
@@ -1333,9 +1243,7 @@ Descriptions: 1. Perform audit engagements from planning, executing and completi
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD mentions audit planning, but it is framed as financial statement audit rather than internal audit. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly covers completing financial statements audits and preparing financial reports. |
-| Business Innovation and Improvement | Transform businesses through innovation and embrace changes to drive improvements | manual review | The JD mentions improving controls and efficiency, but not business innovation in the taxonomy sense. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | The JD explicitly mentions analytical review of audit work and financial reports. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | Planning, executing, and completing audit engagements with fieldwork is direct engagement execution. |
 | Engagement Completion and Reporting | Perform procedures involved prior to expressing an opinion | add | The JD explicitly mentions completing the audit and preparing financial reports. |
@@ -1392,7 +1300,6 @@ Corporate Tax Description: Assist and support in providing tax compliance and ad
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | Corporate returns, GST returns, and compliance filings are central to the role. |
 | Tax Controversy Management | Respond to tax queries from the authorities with completeness, relevance and accuracy | keep | The JD explicitly covers GST queries, audits, investigations, and IRAS responses. |
 | Tax Risk Management | Review tax risk frameworks to ensure risks are minimised and managed properly | keep | ASK/ACAP reviews, GST audits, and voluntary disclosures directly support tax-risk management. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The JD includes tax research and analysis, but not financial-statement analysis specifically. |
 | Risk and Compliance Reporting | Develop regulatory documents required to meet regulatory reporting requirements and obligations | keep | GST audits, ACAP/ASK reviews, and disclosures to IRAS fit compliance reporting. |
 | Tax Computation | Compute Goods and Services Tax, and tax liabilities | add | Corporate, individual, and GST return preparation clearly requires tax computation. |
 
@@ -1404,8 +1311,6 @@ Audit Associate Working Days: 5 days / 5.5 days(Saturday half day during peak pe
 
 | Skill | Skill Description | Decision | Rationale |
 |---|---|---|---|
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD explicitly covers audit planning, but the role is external audit rather than internal audit. |
-| Engagement Quality Control | Set up control procedures for an assurance engagement | manual review | The JD covers audit programmes and controls testing, but not explicit control-procedure setup. |
 | Engagement Execution | Perform assurance procedures in accordance with the engagement plans | add | Undertaking audit work, testing controls, and substantive procedures is execution work. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | add | Audit tests of controls directly support the internal-controls skill. |
 
@@ -1419,21 +1324,17 @@ Accountant – AR & AP 5 days, Monday to Friday: 8:30am to 5:30pm $5800 – $680
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly covers cash flow cycles, forecasting, and working capital management. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting standards and compliance with accounting policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions workflows, control gaps, and system enhancements, but not formal requirements scoping. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | AR/AP aging, key metrics, and cash flow analysis are explicitly part of the role. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | Working capital, banking facilities, and invoice financing are adjacent, but this is not a bank ALM role. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AR/AP transactions, invoices, and reconciliations. |
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly says to partner with procurement, sales, and operations teams. |
 | Management Decision Making | Make financial decisions based on management reports | keep | The role prepares aging reports and key performance metrics for management. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | AR/AP journals, reconciliations, and month-end close are transactional accounting work. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The role includes internal controls and audit support, but not internal audit planning ownership. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | GST/WHT compliance, audit requirements, and accounting policies are explicit. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly mentions month-end and reporting responsibilities. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | GST and WHT compliance are explicitly stated. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The role explicitly includes month-end, year-end close, and reporting review work. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | The JD explicitly requires maintaining and enhancing internal controls. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | Audit requirements and compliance with company policies are explicit. |
-| Enterprise Risk Management | Assess the adequacy of risk management process and frameworks | manual review | The JD mentions control gaps and compliance, but not an enterprise risk framework. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end close are explicitly part of the role. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | ERP systems and automation support clearly map to accounting and tax systems. |
 | Business Process Re-engineering | Analyse business processes and workflows within the organisation and identification of new approaches to completely redesign business activities or optimise performance, quality and speed of services or processes including exploration of automating and streamlining processes, evaluation of associated costs and benefits of redesigning business processes, as well as identification of potential impact, change management activities and resources required | add | Continuous improvement and automation initiatives are direct process-reengineering signals. |
@@ -1463,21 +1364,17 @@ Accountant – AR & AP 5 days, Monday to Friday: 8:30am to 5:30pm $5800 – $680
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly covers cash flow cycles, forecasting, and working capital management. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting standards and compliance with accounting policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions workflows, control gaps, and system enhancements, but not formal business-requirement scoping. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | AR/AP aging, key metrics, and cash flow analysis are explicitly included. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | Banking facilities, invoice financing, and working capital are adjacent, but this is not specialised ALM work. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AR/AP transactions, reconciliations, and payments. |
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly says to partner with procurement, sales, and operations teams. |
 | Management Decision Making | Make financial decisions based on management reports | keep | The JD explicitly mentions management review of AR/AP reports and metrics. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | AR/AP journals, month-end close, and reconciliations are transactional accounting work. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD includes audit support and controls, but not internal audit planning. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | GST/WHT compliance and audit requirements are explicit. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes reporting and month-end/year-end close. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | GST and WHT compliance are explicitly listed. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly mentions month-end and year-end close with reporting review. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | Maintaining and enhancing internal controls is explicit. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | Audit requirements and company-policy compliance are explicitly stated. |
-| Enterprise Risk Management | Assess the adequacy of risk management process and frameworks | manual review | The JD references control gaps and compliance, but not a full enterprise-risk framework. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end close are explicitly part of the role. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | ERP systems and automation support clearly map to accounting and tax systems. |
 | Business Process Re-engineering | Analyse business processes and workflows within the organisation and identification of new approaches to completely redesign business activities or optimise performance, quality and speed of services or processes including exploration of automating and streamlining processes, evaluation of associated costs and benefits of redesigning business processes, as well as identification of potential impact, change management activities and resources required | add | Continuous improvement and automation initiatives are direct process-reengineering signals. |
@@ -1492,21 +1389,17 @@ Accountant – AR & AP 5 days, Monday to Friday: 8:30am to 5:30pm $5800 – $680
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly covers cash flow cycles, forecasting, and working capital management. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting standards and compliance with accounting policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions workflows, control gaps, and system enhancements, but not formal requirements scoping. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | AR/AP aging, key metrics, and cash flow analysis are explicitly included. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | Banking facilities, invoice financing, and working capital are adjacent, but this is not specialised ALM work. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AR/AP transactions, reconciliations, and payments. |
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly says to partner with procurement, sales, and operations teams. |
 | Management Decision Making | Make financial decisions based on management reports | keep | The JD explicitly mentions management review of AR/AP reports and metrics. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | AR/AP journals, month-end close, and reconciliations are transactional accounting work. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD includes audit support and controls, but not internal audit planning. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | GST/WHT compliance and audit requirements are explicit. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes reporting and month-end/year-end close. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | GST and WHT compliance are explicitly listed. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly mentions month-end and year-end close with reporting review. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | Maintaining and enhancing internal controls is explicit. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | Audit requirements and company-policy compliance are explicitly stated. |
-| Enterprise Risk Management | Assess the adequacy of risk management process and frameworks | manual review | The JD references control gaps and compliance, but not a full enterprise-risk framework. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end close are explicitly part of the role. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | ERP systems and automation support clearly map to accounting and tax systems. |
 | Business Process Re-engineering | Analyse business processes and workflows within the organisation and identification of new approaches to completely redesign business activities or optimise performance, quality and speed of services or processes including exploration of automating and streamlining processes, evaluation of associated costs and benefits of redesigning business processes, as well as identification of potential impact, change management activities and resources required | add | Continuous improvement and automation initiatives are direct process-reengineering signals. |
@@ -1521,21 +1414,17 @@ Accountant – AR & AP 5 days, Monday to Friday: 8:30am to 5:30pm $5800 – $680
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly covers cash flow cycles, forecasting, and working capital management. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting standards and compliance with accounting policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions workflows, control gaps, and system enhancements, but not formal requirements scoping. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | AR/AP aging, key metrics, and cash flow analysis are explicitly included. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | Banking facilities, invoice financing, and working capital are adjacent, but this is not specialised ALM work. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AR/AP transactions, reconciliations, and payments. |
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly says to partner with procurement, sales, and operations teams. |
 | Management Decision Making | Make financial decisions based on management reports | keep | The JD explicitly mentions management review of AR/AP reports and metrics. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | AR/AP journals, month-end close, and reconciliations are transactional accounting work. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD includes audit support and controls, but not internal audit planning. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | GST/WHT compliance and audit requirements are explicit. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes reporting and month-end/year-end close. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | GST and WHT compliance are explicitly listed. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly mentions month-end and year-end close with reporting review. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | Maintaining and enhancing internal controls is explicit. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | Audit requirements and company-policy compliance are explicitly stated. |
-| Enterprise Risk Management | Assess the adequacy of risk management process and frameworks | manual review | The JD references control gaps and compliance, but not a full enterprise-risk framework. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end close are explicitly part of the role. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | ERP systems and automation support clearly map to accounting and tax systems. |
 | Business Process Re-engineering | Analyse business processes and workflows within the organisation and identification of new approaches to completely redesign business activities or optimise performance, quality and speed of services or processes including exploration of automating and streamlining processes, evaluation of associated costs and benefits of redesigning business processes, as well as identification of potential impact, change management activities and resources required | add | Continuous improvement and automation initiatives are direct process-reengineering signals. |
@@ -1550,21 +1439,17 @@ Accountant – AR & AP 5 days, Monday to Friday: 8:30am to 5:30pm $5800 – $680
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly covers cash flow cycles, forecasting, and working capital management. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting standards and compliance with accounting policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions workflows, control gaps, and system enhancements, but not formal requirements scoping. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | AR/AP aging, key metrics, and cash flow analysis are explicitly included. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | Banking facilities, invoice financing, and working capital are adjacent, but this is not specialised ALM work. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AR/AP transactions, reconciliations, and payments. |
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly says to partner with procurement, sales, and operations teams. |
 | Management Decision Making | Make financial decisions based on management reports | keep | The JD explicitly mentions management review of AR/AP reports and metrics. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | AR/AP journals, month-end close, and reconciliations are transactional accounting work. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD includes audit support and controls, but not internal audit planning. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | GST/WHT compliance and audit requirements are explicit. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes reporting and month-end/year-end close. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | GST and WHT compliance are explicitly listed. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly mentions month-end and year-end close with reporting review. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | Maintaining and enhancing internal controls is explicit. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | Audit requirements and company-policy compliance are explicitly stated. |
-| Enterprise Risk Management | Assess the adequacy of risk management process and frameworks | manual review | The JD references control gaps and compliance, but not a full enterprise-risk framework. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end close are explicitly part of the role. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | ERP systems and automation support clearly map to accounting and tax systems. |
 | Business Process Re-engineering | Analyse business processes and workflows within the organisation and identification of new approaches to completely redesign business activities or optimise performance, quality and speed of services or processes including exploration of automating and streamlining processes, evaluation of associated costs and benefits of redesigning business processes, as well as identification of potential impact, change management activities and resources required | add | Continuous improvement and automation initiatives are direct process-reengineering signals. |
@@ -1580,21 +1465,17 @@ Accountant – AR & AP 5 days, Monday to Friday: 8:30am to 5:30pm $5800 – $680
 |---|---|---|---|
 | Cash Flow Management | Manage and maintain business units' cash flow by consolidating data and performing analysis on cash inflow and outflow | keep | The JD explicitly covers cash flow cycles, forecasting, and working capital management. |
 | Accounting Standards | Apply financial reporting framework prescribed by the relevant governing body to ensure all transactions meet regulatory requirements | keep | The JD explicitly mentions accounting standards and compliance with accounting policies. |
-| Business Needs Analysis | Identify and scope business requirements and priorities through rigorous information gathering and analysis as well as clarification of the solutions, initiatives and programmes to enable effective delivery. This also involves the development of a compelling and defensible business case and the articulation of the potential impact of the solution to the business | manual review | The JD mentions workflows, control gaps, and system enhancements, but not formal requirements scoping. |
 | Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | keep | AR/AP aging, key metrics, and cash flow analysis are explicitly included. |
-| Asset and Liability Management | Address risks faced by financial institutions or banks due to mismatch between assets and liabilities by performing capital, liquidity, interest rate and balance sheet management. | manual review | Banking facilities, invoice financing, and working capital are adjacent, but this is not specialised ALM work. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | The JD explicitly covers AR/AP transactions, reconciliations, and payments. |
 | Partnership Management | Build cooperative partnerships with inter-organisational and external stakeholders and leverage these relations to meet organisational objectives. This includes coordination and strategising with internal and external stakeholders through close cooperation and exchange of information to solve problems. | keep | The JD explicitly says to partner with procurement, sales, and operations teams. |
 | Management Decision Making | Make financial decisions based on management reports | keep | The JD explicitly mentions management review of AR/AP reports and metrics. |
 | Transactional Accounting | Apply transactional accounting to record financial events | keep | AR/AP journals, month-end close, and reconciliations are transactional accounting work. |
-| Internal Audit Engagement Planning | Determine priorities of the internal audit and plan the timing and scope of audit procedures and resources | manual review | The JD includes audit support and controls, but not internal audit planning. |
 | Regulatory Compliance | Comply with policies, procedures, and external regulations | keep | GST/WHT compliance and audit requirements are explicit. |
 | Financial Reporting | Prepare general-purpose financial statements and disclosure notes in accordance with applicable financial reporting framework | keep | The JD explicitly includes reporting and month-end/year-end close. |
 | Tax Compliance | Evaluate tax computations and systems to ensure compliance with statutory tax obligations | keep | GST and WHT compliance are explicitly listed. |
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly mentions month-end and year-end close with reporting review. |
 | Internal Controls | Evaluate effectiveness and efficiency of internal controls in the organisation | keep | Maintaining and enhancing internal controls is explicit. |
 | Audit Compliance | Ensure compliance with corporate policies and guidelines | keep | Audit requirements and company-policy compliance are explicitly stated. |
-| Enterprise Risk Management | Assess the adequacy of risk management process and frameworks | manual review | The JD references control gaps and compliance, but not a full enterprise-risk framework. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end and year-end close are explicitly part of the role. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | ERP systems and automation support clearly map to accounting and tax systems. |
 | Business Process Re-engineering | Analyse business processes and workflows within the organisation and identification of new approaches to completely redesign business activities or optimise performance, quality and speed of services or processes including exploration of automating and streamlining processes, evaluation of associated costs and benefits of redesigning business processes, as well as identification of potential impact, change management activities and resources required | add | Continuous improvement and automation initiatives are direct process-reengineering signals. |
@@ -1666,9 +1547,6 @@ Company Description Protege Fund Services is an independent Singapore based Fund
 | Financial Statements Review | Review financial statements in accordance with applicable frameworks and regulatory requirements | keep | The JD explicitly mentions understanding financial statements and fund reporting. |
 | Financial Transactions | Prepare business documentation and cash balances | keep | Trades and cash transactions into fund accounting systems directly support this skill. |
 | Trade Processing, Fund Settlement and Treasury Transaction Processing | Demonstrate the ability to validate appropriate fund terms and transfers, monitor and review the smooth delivery of securities to buyers, perform settlement, rate verification, reconciliation and post-trade confirmation activities including reporting transactions that have not been cleared or are unusual | keep | The JD explicitly covers trades, cash transactions, and portfolio reconciliation. |
-| Financial Analysis | Analyse the financial statements and data to provide insights about the financial performance and position of the organisation over time | manual review | The role uses financial statements and reporting, but it does not clearly call for formal financial analysis. |
-| Portfolio and Investment Risk Management | Manage relevant risks arising from investment and portfolio management activities to ensure compliance to regulations, investment guidelines and enabling investment objectives to be achieved | manual review | The JD covers portfolio reporting and multiple asset classes, but not explicit risk-management ownership. |
-| Valuation Conclusion and Reporting | Develop valuation reports for the valuation engagement | manual review | The JD mentions NAV packs and reports, but not valuation-engagement reporting. |
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | NAV financial closing is explicitly stated. |
 
 ## 98. Accounts Assistant
@@ -1685,11 +1563,4 @@ ABOUT THE ROLE: We are seeking a detail-oriented and motivated individual to joi
 | Financial Closing | Carry out month-end closing and reconciliation to ensure financial records are maintained properly | add | Month-end closing and audit preparation are explicit. |
 | Accounting and Tax Systems | Implement accounting or tax software systems in the organisation | add | Microsoft Business Central 365 and accounting-system proficiency clearly fit this skill. |
 
-## Aggregate Summary
 
-- Reviewed jobs: 98
-- Exact-match skill rows retained in this file: 435
-- Decisions retained: keep = 306, manual review = 129
-- Skills removed from `data/acc/audit_tax_accounting_jobs.csv`: 199
-- Extracted skills removed from `data/acc/audit_tax_accounting_jobs.csv` because no exact taxonomy title matched: 705. Basically these skills belong to other sectors like `Infocomm technology`, instead of `Accountancy` and `Financial Services`
-- Skills marked add: 364
