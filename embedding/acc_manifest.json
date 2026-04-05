@@ -36,18 +36,16 @@
     }
   },
   "outputs": {
-    "jobs": "embedding\\acc\\jobs_embeddings.jsonl",
-    "skills": "embedding\\acc\\skills_embeddings.jsonl",
-    "courses": "embedding\\acc\\courses_embeddings.jsonl",
+    "skills": "embedding\\acc_skills_embeddings.jsonl",
     "jobs_splits": {
-      "train": "embedding\\acc\\splits\\jobs_train_embeddings.jsonl",
-      "val": "embedding\\acc\\splits\\jobs_val_embeddings.jsonl",
-      "test": "embedding\\acc\\splits\\jobs_test_embeddings.jsonl"
+      "train": "embedding\\jobs_train_embeddings.jsonl",
+      "val": "embedding\\jobs_val_embeddings.jsonl",
+      "test": "embedding\\jobs_test_embeddings.jsonl"
     },
     "courses_splits": {
-      "train": "embedding\\acc\\splits\\courses_train_embeddings.jsonl",
-      "val": "embedding\\acc\\splits\\courses_val_embeddings.jsonl",
-      "test": "embedding\\acc\\splits\\courses_test_embeddings.jsonl"
+      "train": "embedding\\courses_train_embeddings.jsonl",
+      "val": "embedding\\courses_val_embeddings.jsonl",
+      "test": "embedding\\courses_test_embeddings.jsonl"
     }
   },
   "counts": {
