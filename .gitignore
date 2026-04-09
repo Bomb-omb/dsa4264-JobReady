@@ -1,4 +1,6 @@
 __pycache__/
 *.py[cod]
-/tests/
-/embedding/*.jsonl
+.env
+.DS_Store
+tests/__pycache__/
+*.jsonl
