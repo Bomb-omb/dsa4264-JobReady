@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import os
+import random
 import re
 from collections import OrderedDict
 from pathlib import Path
@@ -27,6 +30,14 @@ SKILL_SOURCE_COLUMNS = (
     "extracted_skills",
     "extracted_apps_tools",
 )
+DEFAULT_SPLIT_RATIOS = (0.6, 0.2, 0.2)
+DEFAULT_SPLIT_LABELS = ("train", "val", "test")
+SKILL_FILE_COLUMN_CANDIDATES = (
+    ("parent_skill_title", "parent_skill_description"),
+    ("skill_name", "skill_description"),
+    ("title", "description"),
+    ("name", "description"),
+)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -38,6 +49,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--jobs-file")
     parser.add_argument("--courses-file", default=str(DEFAULT_COURSE_FILE))
+    parser.add_argument("--skills-file")
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME)
     parser.add_argument("--device", default="auto")
@@ -47,6 +59,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="auto",
     )
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
+    parser.add_argument(
+        "--course-code-prefix",
+        help="Only keep course rows whose course code starts with this prefix.",
+    )
+    parser.add_argument(
+        "--split-ratios",
+        default="0.6,0.2,0.2",
+        help="Comma-separated ratios for train,val,test splits on jobs and courses.",
+    )
+    parser.add_argument(
+        "--split-seed",
+        type=int,
+        default=42,
+        help="Random seed used for deterministic train,val,test assignment.",
+    )
     parser.add_argument(
         "--normalize",
         dest="normalize",
@@ -90,6 +117,33 @@ def resolve_jobs_file(explicit_path: str | None) -> Path:
         "No default jobs file found. Checked: "
         + ", ".join(str(path) for path in DEFAULT_JOB_FILE_CANDIDATES)
     )
+
+
+def resolve_local_model_path(model_name: str) -> str:
+    candidate_path = Path(model_name)
+    if candidate_path.exists():
+        return str(candidate_path)
+
+    hf_home = Path(os.getenv("HF_HOME", str(Path.home() / ".cache" / "huggingface")))
+    cache_root = hf_home / "hub"
+    repo_dir = cache_root / f"models--{model_name.replace('/', '--')}"
+    if not repo_dir.exists():
+        return model_name
+
+    refs_main = repo_dir / "refs" / "main"
+    if refs_main.exists():
+        revision = refs_main.read_text(encoding="utf-8").strip()
+        snapshot_dir = repo_dir / "snapshots" / revision
+        if snapshot_dir.exists():
+            return str(snapshot_dir)
+
+    snapshots_dir = repo_dir / "snapshots"
+    if snapshots_dir.exists():
+        snapshots = sorted(path for path in snapshots_dir.iterdir() if path.is_dir())
+        if snapshots:
+            return str(snapshots[0])
+
+    return model_name
 
 
 def ensure_file_exists(path: Path, label: str) -> None:
@@ -164,6 +218,105 @@ def parse_skill_values(value: Any) -> list[str]:
 
 def deduplicate_preserve_order(values: list[str]) -> list[str]:
     return list(OrderedDict.fromkeys(values))
+
+
+def parse_split_ratios(text: str) -> tuple[float, float, float]:
+    parts = [part.strip() for part in text.split(",")]
+    if len(parts) != len(DEFAULT_SPLIT_LABELS):
+        raise ValueError(
+            "--split-ratios must contain exactly three comma-separated values "
+            "for train,val,test."
+        )
+
+    try:
+        ratios = tuple(float(part) for part in parts)
+    except ValueError as exc:
+        raise ValueError("--split-ratios must contain numeric values.") from exc
+
+    if any(ratio < 0 for ratio in ratios):
+        raise ValueError("--split-ratios cannot contain negative values.")
+
+    total = sum(ratios)
+    if not math.isclose(total, 1.0, rel_tol=0.0, abs_tol=1e-9):
+        raise ValueError("--split-ratios must sum to 1.0.")
+
+    return ratios  # type: ignore[return-value]
+
+
+def compute_split_counts(total: int, ratios: tuple[float, float, float]) -> list[int]:
+    exact_counts = [total * ratio for ratio in ratios]
+    counts = [math.floor(value) for value in exact_counts]
+    remaining = total - sum(counts)
+
+    fractional_parts = sorted(
+        (
+            (exact - math.floor(exact), index)
+            for index, exact in enumerate(exact_counts)
+        ),
+        reverse=True,
+    )
+
+    for _, index in fractional_parts[:remaining]:
+        counts[index] += 1
+
+    return counts
+
+
+def assign_splits(
+    records: list[dict[str, Any]],
+    *,
+    seed: int,
+    ratios: tuple[float, float, float],
+) -> list[dict[str, Any]]:
+    if not records:
+        return records
+
+    shuffled = [dict(record) for record in sorted(records, key=lambda record: record["record_id"])]
+    rng = random.Random(seed)
+    rng.shuffle(shuffled)
+
+    split_counts = compute_split_counts(len(shuffled), ratios)
+
+    offset = 0
+    for split_label, count in zip(DEFAULT_SPLIT_LABELS, split_counts, strict=True):
+        for index, record in enumerate(shuffled[offset : offset + count], start=offset):
+            shuffled[index] = {"split": split_label, **record}
+        offset += count
+
+    return shuffled
+
+
+def count_records_by_split(records: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {label: 0 for label in DEFAULT_SPLIT_LABELS}
+    for record in records:
+        split_name = record.get("split")
+        if split_name in counts:
+            counts[split_name] += 1
+    return counts
+
+
+def filter_courses_by_prefix(df: pd.DataFrame, prefix: str | None) -> pd.DataFrame:
+    if not prefix:
+        return df
+
+    ensure_columns(df, (COURSE_ID_COLUMN,), "courses file")
+    mask = df[COURSE_ID_COLUMN].astype(str).str.startswith(prefix, na=False)
+    return df.loc[mask].copy()
+
+
+def resolve_skill_file_columns(df: pd.DataFrame) -> tuple[str, str]:
+    for title_column, description_column in SKILL_FILE_COLUMN_CANDIDATES:
+        if title_column in df.columns and description_column in df.columns:
+            return title_column, description_column
+
+    raise ValueError(
+        "skills file is missing a supported title/description column pair. "
+        "Expected one of: "
+        + "; ".join(
+            f"{title_column}+{description_column}"
+            for title_column, description_column in SKILL_FILE_COLUMN_CANDIDATES
+        )
+    )
 
 
 def build_job_records(df: pd.DataFrame) -> list[dict[str, Any]]:
@@ -258,6 +411,30 @@ def build_skill_records(job_df: pd.DataFrame, course_df: pd.DataFrame) -> list[d
     return list(grouped.values())
 
 
+def build_skill_records_from_file(df: pd.DataFrame) -> list[dict[str, Any]]:
+    title_column, description_column = resolve_skill_file_columns(df)
+    records: list[dict[str, Any]] = []
+
+    for row in df.itertuples(index=False):
+        skill_name = normalize_skill_name(getattr(row, title_column))
+        description = normalize_text(getattr(row, description_column))
+        if not skill_name or not description:
+            continue
+
+        records.append(
+            {
+                "record_id": f"skill:{slugify(skill_name)}",
+                "entity_type": "skill",
+                "skill_name": skill_name,
+                "text": description,
+                "description": description,
+                "source": "skills_file",
+            }
+        )
+
+    return records
+
+
 def select_device_and_dtype(device_name: str, dtype_name: str) -> tuple[str, str]:
     try:
         import torch
@@ -301,12 +478,27 @@ def load_embedding_model(model_name: str, device_name: str, dtype_name: str) -> 
         "float16": torch.float16,
         "float32": torch.float32,
     }
+    local_files_only = os.getenv("LOCAL_EMBEDDING_LOCAL_FILES_ONLY", "1").strip().lower() not in (
+        "0",
+        "false",
+        "no",
+    )
+    resolved_model_name = resolve_local_model_path(model_name)
+    if local_files_only and resolved_model_name == model_name:
+        raise SystemExit(
+            f"Local embedding model '{model_name}' was not found in the Hugging Face cache. "
+            "Set LOCAL_EMBEDDING_MODEL to a local snapshot path or run the embedding build once "
+            "while the model is available."
+        )
 
     return SentenceTransformer(
-        model_name,
+        resolved_model_name,
         trust_remote_code=True,
         device=device_name,
+        local_files_only=local_files_only,
         model_kwargs={"torch_dtype": dtype_map[dtype_name]},
+        tokenizer_kwargs={"local_files_only": local_files_only},
+        config_kwargs={"local_files_only": local_files_only},
     )
 
 
@@ -343,6 +535,30 @@ def write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
+def build_split_output_paths(output_dir: Path, entity_type: str) -> dict[str, str]:
+    return {
+        split_label: str(output_dir / "splits" / f"{entity_type}_{split_label}_embeddings.jsonl")
+        for split_label in DEFAULT_SPLIT_LABELS
+    }
+
+
+def write_split_jsonl_files(
+    output_dir: Path,
+    *,
+    jobs_records: list[dict[str, Any]],
+    courses_records: list[dict[str, Any]],
+) -> None:
+    for entity_type, records in (("jobs", jobs_records), ("courses", courses_records)):
+        for split_label in DEFAULT_SPLIT_LABELS:
+            split_records = [
+                record for record in records if record.get("split") == split_label
+            ]
+            write_jsonl(
+                output_dir / "splits" / f"{entity_type}_{split_label}_embeddings.jsonl",
+                split_records,
+            )
+
+
 def infer_embedding_dimension(records: list[dict[str, Any]]) -> int:
     if not records:
         return 0
@@ -358,9 +574,15 @@ def build_manifest(
     output_dir: Path,
     jobs_file: Path,
     courses_file: Path,
+    skills_file: Path | None,
+    course_code_prefix: str | None,
+    split_ratios: tuple[float, float, float],
+    split_seed: int,
     jobs_count: int,
     skills_count: int,
     courses_count: int,
+    jobs_split_counts: dict[str, int],
+    courses_split_counts: dict[str, int],
     embedding_dimension: int,
 ) -> dict[str, Any]:
     return {
@@ -372,11 +594,24 @@ def build_manifest(
         "inputs": {
             "jobs_file": str(jobs_file),
             "courses_file": str(courses_file),
+            "skills_file": str(skills_file) if skills_file else None,
+        },
+        "filters": {
+            "course_code_prefix": course_code_prefix,
+        },
+        "splits": {
+            "labels": list(DEFAULT_SPLIT_LABELS),
+            "ratios": list(split_ratios),
+            "seed": split_seed,
+            "jobs": jobs_split_counts,
+            "courses": courses_split_counts,
         },
         "outputs": {
             "jobs": str(output_dir / "jobs_embeddings.jsonl"),
             "skills": str(output_dir / "skills_embeddings.jsonl"),
             "courses": str(output_dir / "courses_embeddings.jsonl"),
+            "jobs_splits": build_split_output_paths(output_dir, "jobs"),
+            "courses_splits": build_split_output_paths(output_dir, "courses"),
         },
         "counts": {
             "jobs": jobs_count,
@@ -389,10 +624,17 @@ def build_manifest(
 def print_summary(manifest: dict[str, Any]) -> None:
     print("Saved embeddings:")
     for entity_type, output_path in manifest["outputs"].items():
+        if isinstance(output_path, dict):
+            continue
         print(f"  {entity_type}: {output_path}")
     print("Counts:")
     for entity_type, count in manifest["counts"].items():
         print(f"  {entity_type}: {count}")
+    print("Splits:")
+    for entity_type in ("jobs", "courses"):
+        split_counts = manifest["splits"][entity_type]
+        rendered = ", ".join(f"{split}={count}" for split, count in split_counts.items())
+        print(f"  {entity_type}: {rendered}")
     print(f"Embedding dimension: {manifest['embedding_dimension']}")
     print(f"Device: {manifest['device']}")
     print(f"Torch dtype: {manifest['torch_dtype']}")
@@ -403,17 +645,35 @@ def main() -> None:
 
     jobs_file = resolve_jobs_file(args.jobs_file)
     courses_file = Path(args.courses_file)
+    skills_file = Path(args.skills_file) if args.skills_file else None
     output_dir = Path(args.output_dir)
+    split_ratios = parse_split_ratios(args.split_ratios)
 
     ensure_file_exists(jobs_file, "jobs file")
     ensure_file_exists(courses_file, "courses file")
+    if skills_file:
+        ensure_file_exists(skills_file, "skills file")
 
     jobs_df = pd.read_csv(jobs_file)
-    courses_df = pd.read_csv(courses_file)
+    courses_df = filter_courses_by_prefix(pd.read_csv(courses_file), args.course_code_prefix)
+    skills_df = pd.read_csv(skills_file) if skills_file else None
 
-    job_records = [] if args.skip_jobs else build_job_records(jobs_df)
-    skill_records = [] if args.skip_skills else build_skill_records(jobs_df, courses_df)
-    course_records = [] if args.skip_courses else build_course_records(courses_df)
+    job_records = [] if args.skip_jobs else assign_splits(
+        build_job_records(jobs_df),
+        seed=args.split_seed,
+        ratios=split_ratios,
+    )
+    if args.skip_skills:
+        skill_records = []
+    elif skills_df is not None:
+        skill_records = build_skill_records_from_file(skills_df)
+    else:
+        skill_records = build_skill_records(jobs_df, courses_df)
+    course_records = [] if args.skip_courses else assign_splits(
+        build_course_records(courses_df),
+        seed=args.split_seed,
+        ratios=split_ratios,
+    )
 
     if not any((job_records, skill_records, course_records)):
         raise SystemExit("Nothing to embed. Enable at least one entity type.")
@@ -444,6 +704,11 @@ def main() -> None:
     write_jsonl(output_dir / "jobs_embeddings.jsonl", embedded_jobs)
     write_jsonl(output_dir / "skills_embeddings.jsonl", embedded_skills)
     write_jsonl(output_dir / "courses_embeddings.jsonl", embedded_courses)
+    write_split_jsonl_files(
+        output_dir,
+        jobs_records=embedded_jobs,
+        courses_records=embedded_courses,
+    )
 
     manifest = build_manifest(
         model_name=args.model_name,
@@ -453,9 +718,15 @@ def main() -> None:
         output_dir=output_dir,
         jobs_file=jobs_file,
         courses_file=courses_file,
+        skills_file=skills_file,
+        course_code_prefix=args.course_code_prefix,
+        split_ratios=split_ratios,
+        split_seed=args.split_seed,
         jobs_count=len(embedded_jobs),
         skills_count=len(embedded_skills),
         courses_count=len(embedded_courses),
+        jobs_split_counts=count_records_by_split(embedded_jobs),
+        courses_split_counts=count_records_by_split(embedded_courses),
         embedding_dimension=infer_embedding_dimension(
             embedded_jobs or embedded_skills or embedded_courses
         ),
