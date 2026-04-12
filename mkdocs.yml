@@ -1,6 +1,9 @@
 site_name: DSA4264 JobReady Report
 theme:
-  name: material
+  name: readthedocs
+
+repo_url: https://github.com/bomb-omb/dsa4264-JobReady
+repo_name: GitHub
 
 nav:
   - Home: index.md
