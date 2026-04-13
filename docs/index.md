@@ -1,34 +1,6 @@
-# DSA4264 JobReady Report
+# Assess how well university courses are preparing students today for the job market
 
-## Group Members
-
-| Name | Student Number |
-|------|------|
-| Alvis Low Yue Han |  |
-| Lam Jian Yi Eugene |  |
-| Lee Tze Ning |  |
-| Ryan Toh Jun Hui |  |
-| Yap Yi Pin |  |
-
-## Table of Contents
-
-- [Section 1: Context](#section-1-context)
-- [Section 2: Scope](#section-2-scope)
-  - [2.1 Problem](#21-problem)
-  - [2.2 Success Criteria](#22-success-criteria)
-  - [2.3 Assumptions](#23-assumptions)
-- [Section 3: Methodology](#section-3-methodology)
-  - [3.1 Technical Assumptions](#31-technical-assumptions)
-  - [3.2 Data](#32-data)
-    - [3.2.1 Data Collection](#321-data-collection)
-    - [3.2.2 Data Cleaning and Filtering](#322-data-cleaning-and-filtering)
-    - [3.2.3 Feature Engineering](#323-feature-engineering)
-    - [3.2.4 Data Splitting](#324-data-splitting)
-  - [3.3 Experimental Design](#33-experimental-design)
-- [Section 4: Findings](#section-4-findings)
-  - [4.1 Results](#41-results)
-  - [4.2 Discussions](#42-discussions)
-  - [4.3 Recommendations](#43-recommendations)
+By Alvis Low Yue Han, Lam Jian Yi Eugene, Lee Tze Ning, Ryan Toh Jun Hui, Yap Yi Pin
 
 ## Section 1: Context
 
@@ -60,25 +32,15 @@ In contrast, Natural Language Processing (NLP) models identify skill-related phr
 
 ### 2.2 Success Criteria
 
-If this project is successful, it should achieve both business and operational goals for MOE. Business goal 1 is translated into operation goal 1, the same goes for goal 2\.
+If this project is successful, it should achieve two key goals for MOE.
 
-**Business Goal 1:**  
-Reduce the amount of manual effort required for policy officers to review and compare job-market skill demands against university courses’ learning outcomes. 
+**Operational Goal 1:**
 
-The project achieves success if it reduces the time required for course-to-job skill mapping by at least **75%** compared with the current manual review process. This can be evaluated through User Acceptance Testing (UAT) by comparing the time the officers and system take to complete the same review task manually.
+Create a system that can process new data and reduce the time required for course-to-job skill mapping by at least 75% compared with the current manual review process. This can be evaluated through User Acceptance Testing (UAT) by comparing the time taken for officers to complete the same review task manually versus with the system.
 
-**Operational Goal 1:**  
-Develop a system that automatically ingest raw job advertisement data from MyCareersFuture and curriculum data from NUSMods API, maps both to a standardized skills taxonomy. 
+**Business Goal 1:**
 
-The project will achieve success if this pipeline can run on new data and produce interpretable course-skill-job matching outputs.
-
-**Business Goal 2:**  
-Enable policy officers to identify curriculum gaps and emerging skill demands in a more timely and proactive manner. 
-
-The project will achieve success if officers can generate reports on in-demand skills and their coverage in existing university courses with sufficient confidence, without manually inspecting large volumes of raw job-posting and syllabus text.
-
-**Operational Goal 2:**  
-Provide a user-friendly natural language interface that allows MOE officers to query labour-market and curriculum data efficiently. The system should enable officers to retrieve relevant insights, including which skills are increasingly demanded and whether they are reflected in current course learning outcomes.
+Enable policy officers to identify curriculum gaps and emerging skill demands in a more timely and convenient manner by providing a user-friendly natural language interface for querying latest labour-market and course data. 
 
 ### 2.3 Assumptions
 
@@ -148,11 +110,11 @@ The training set was used for model development, the validation set was used for
 
 The experiments in this project formulate the task as a **multi-label skill prediction problem**. Each input consists of an embedded **job** or **course description**, and the model outputs one or more relevant skills from the filtered set of **229 skills**. The predicted skills act as an intermediate representation for linking job requirements to relevant university courses.
 
-We selected two prediction approaches that are suitable for fast prototyping: **cosine similarity** and **one-vs-rest logistic regression**. Both approaches used the same text embedding to ensure a fair comparison.
+We selected two prediction approaches that are suitable for fast prototyping: **cosine similarity** and **one-vs-rest (OvR) logistic regression** . Both approaches used the same text embedding to ensure a fair comparison.
 
 The **cosine similarity** approach serves as a simple retrieval-based baseline. It measures the semantic similarity between each job or course embedding and each skill embedding in a shared vector space. Skills with higher cosine similarity scores are considered more relevant to the given entity. This method was chosen because it is computationally simple, does not require extensive supervised training, and is a natural baseline for an embedding-based matching problem.
 
-The **one-vs-rest logistic regression** approach serves as a supervised comparison model. One binary classifier is trained for each skill to predict whether that skill is relevant to a given job or course, based on the same embedding features. This model was chosen because it is lightweight, and suitable for small datasets, while still allowing the model to learn per-skill decision boundaries that may outperform direct similarity ranking.
+The **OvR** **logistic regression** approach serves as a supervised comparison model. One binary classifier is trained for each skill to predict whether that skill is relevant to a given job or course, based on the same embedding features. This model was chosen because it is lightweight, and suitable for small datasets, while still allowing the model to learn per-skill decision boundaries that may outperform direct similarity ranking.
 
 For both model families, we evaluated two prediction strategies: **threshold-based prediction** and **top-k prediction**. In threshold-based prediction, all skills with scores above a tuned threshold are assigned, allowing each record to receive a variable number of predicted skills. In top-k prediction, the model always returns the fixed number of highest-scoring skills. This design allows comparison not only between unsupervised and supervised modelling approaches, but also between two ways of generating multi-label outputs. Therefore, the main hyperparameters tuned were the threshold and the value of k.
 
@@ -160,27 +122,64 @@ Model performance was evaluated as a **multi-label classification task**, where 
 
 Among these metrics, **micro-F1** was used as the primary model selection criterion. This is because the task exhibits substantial **class imbalance** across the 229-skill label space, with some skills appearing much more frequently than others. In this setting, accuracy would not be appropriate, since the very large number of true negative entity-skill pairs could make performance appear artificially high even when relevant skills are missed. Precision and recall on their own were also insufficient. Optimising only precision would make the model too cautious and cause it to miss relevant skills, while optimising only recall would make it predict too many irrelevant skills. Micro-F1 was therefore used to balance both objectives. It was preferred over macro-F1 as the main tuning objective because the validation set was relatively small, making macro-averaged scores more unstable and sensitive to rare skills with very low support.
 
-The final set of hyperparameters for each model variant was chosen by tuning on the **training set** and comparing the best-performing configuration on the **validation set**. Specifically, the best variant from each of the four experimental setups
-
-1. cosine similarity \+ threshold,  
-2. cosine similarity \+ top-k,  
-3. logistic regression \+ threshold  
-4. logistic regression \+ top-k
-
-was evaluated on the validation set. The model with the highest **validation micro-F1** was selected as the final model for subsequent testing.
+The final set of hyperparameters for each model variant was chosen by tuning on the **training set** and comparing the best-performing configuration on the **validation set**. Specifically, the best variant from each of the four experimental setups was evaluated on the validation set. The model with the highest **validation micro-F1** was selected as the final model for subsequent testing.
 
 ## Section 4: Findings
 
-Describe the datasets used here.
-
 ### 4.1 Results
 
-Write your content here.
+Validation-set results (to 3sf):
+
+| Model | Micro F1-score | Micro Precision | Micro Recall | Macro F1-score | Macro Precision | Macro Recall |
+| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
+| OvR Logistic Regression (Threshold) | 0.694 | 0.704 | 0.685 | 0.0664 | 0.0662 | 0.0724 |
+| OvR Logistic Regression (Top-K) | 0.699 | 0.654 | 0.750 | 0.0565 | 0.0529 | 0.0653 |
+| Cosine Similarity (Threshold) | 0.302 | 0.194 | 0.685 | 0.0377 | 0.0299 | 0.0584 |
+| Cosine Similarity (Top-K) | 0.276 | 0.191  | 0.500  | 0.0347 | 0.0389  | 0.0533  |
+
+Choosing based on the best validation micro F1-score, our final model is OvR logistic regression (Top-K). This is its’ test-set results (3sf):
+
+| Micro F1-score | Micro Precision | Micro Recall | Macro F1-score | Macro Precision | Macro Recall |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| 0.635 | 0.571 | 0.714 | 0.0424 | 0.0407 | 0.0523 |
+
+The test-set micro F1-score of 0.635 was slightly lower than the validation score of 0.699, but the decrease was not large. This suggests that the model’s performance remained reasonably consistent on unseen data, indicating acceptable generalisation.
+
+SHAP and LIME were not used for interpretability because the models relied on dense embedding features. Although these methods could technically be applied, the resulting explanations would describe the contribution of abstract embedding dimensions. Given that the intended users are policy officers who need actionable explanations, we instead used skill-level interpretability, which will be outlined in the **4.2 Discussions**. 
 
 ### 4.2 Discussions
 
-Write your content here.
+The final model was applied to the full filtered accountancy jobs and courses dataset to generate a table showing which skills were most frequently demanded in job postings and whether those skills appeared to be covered by existing ACC courses. This output directly supports the project’s business objective of helping policymakers identify potential curriculum gaps more efficiently. The table could be found at the end of `model/ovr_logreg_topk.ipynb`.
+
+Micro F1-score places greater weight on skills that appear more frequently in the dataset. This is meaningful in the present business context, because MOE is especially interested in identifying widely demanded skills that affect a large share of entry-level roles. Therefore, even if the model does not achieve perfect prediction across every skill, a reasonably strong micro F1-score suggests that it can still provide business value by surfacing the most important demand patterns for curriculum review. However, this also means that the model may be less reliable for rare or emerging skills, so its outputs should only be used as a decision support tool.
+
+We also built a **prototype chatbot** on top of the final model. The chatbot currently runs locally to support the operational and business goals.
+
+As shown in the screenshots, the chatbot can generate **interpretable course-skill-job matching outputs**. 
+
+As shown in the screenshots, the chatbot can generate **interpretable course-skill-job matching outputs**.
+
+![Chatbot output](images/image_1.png)
+
+It also displays a **sidebar table providing the latest labour-market and related course data** that can be expanded for further review. The user can then ask the chatbot if they want more information regarding the details.
+
+![Sidebar table](images/image_2.jpg)
+
+![Expanded sidebar](images/image_3.jpg)
+
 
 ### 4.3 Recommendations
 
-Write your content here.
+Future work should focus on improving the project’s breadth, data pipeline, and deployability. 
+
+#### 4.3.1 Project Breadth 
+Extend the system beyond accounting-related modules and roles to cover other disciplines, other job families, and eventually courses from multiple universities in Singapore. Specifically, the Ministry could prioritise sectors undergoing rapid change in entry-level skill requirements, so that analysis is targeted at areas where curriculum gaps are most likely to appear. 
+
+#### 4.3.2 Data pipeline 
+The data pipeline should also be enhanced to ingest job advertisements on a continuous basis from multiple platforms. Additionally, it should retrieve the skills taxonomy updates from the SkillsFuture website and all AU’s course updates in real time or at regular automated intervals. This would enable the system to remain aligned with current labour-market demand, skills framework and courses’ details. 
+
+Both sections 4.3.1 and 4.3.2 require extra coordination with the AUs, as they (except NUS) do not offer APIs that provide updated course lists and descriptions. Although web scraping is technically feasible, it is relatively brittle and labour-intensive. A more robust alternative would be for the Ministry to request that each AU periodically submit course-level skill mappings based on the standardized skills taxonomy. Besides reducing technical fragility, this would also improve data quality by reducing reliance on course descriptions alone, which may sometimes be too vague.
+
+#### 4.3.3 Deployment
+Finally, the chatbot should be further refined with better functionalities, stronger guardrails and deployed in a secure production setting so that policy officers can use it conveniently and confidently for their curriculum review workflow.
+
