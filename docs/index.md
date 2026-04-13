@@ -146,7 +146,28 @@ The training set was used for model development, the validation set was used for
 
 ### 3.3 Experimental Design
 
-Write your content here.
+The experiments in this project formulate the task as a **multi-label skill prediction problem**. Each input consists of an embedded **job** or **course description**, and the model outputs one or more relevant skills from the filtered set of **229 skills**. The predicted skills act as an intermediate representation for linking job requirements to relevant university courses.
+
+We selected two prediction approaches that are suitable for fast prototyping: **cosine similarity** and **one-vs-rest logistic regression**. Both approaches used the same text embedding to ensure a fair comparison.
+
+The **cosine similarity** approach serves as a simple retrieval-based baseline. It measures the semantic similarity between each job or course embedding and each skill embedding in a shared vector space. Skills with higher cosine similarity scores are considered more relevant to the given entity. This method was chosen because it is computationally simple, does not require extensive supervised training, and is a natural baseline for an embedding-based matching problem.
+
+The **one-vs-rest logistic regression** approach serves as a supervised comparison model. One binary classifier is trained for each skill to predict whether that skill is relevant to a given job or course, based on the same embedding features. This model was chosen because it is lightweight, and suitable for small datasets, while still allowing the model to learn per-skill decision boundaries that may outperform direct similarity ranking.
+
+For both model families, we evaluated two prediction strategies: **threshold-based prediction** and **top-k prediction**. In threshold-based prediction, all skills with scores above a tuned threshold are assigned, allowing each record to receive a variable number of predicted skills. In top-k prediction, the model always returns the fixed number of highest-scoring skills. This design allows comparison not only between unsupervised and supervised modelling approaches, but also between two ways of generating multi-label outputs. Therefore, the main hyperparameters tuned were the threshold and the value of k.
+
+Model performance was evaluated as a **multi-label classification task**, where each job or course may be associated with multiple valid skills. The reporting metrics were **micro-averaged** and **macro-averaged precision, recall, and F1-score**.
+
+Among these metrics, **micro-F1** was used as the primary model selection criterion. This is because the task exhibits substantial **class imbalance** across the 229-skill label space, with some skills appearing much more frequently than others. In this setting, accuracy would not be appropriate, since the very large number of true negative entity-skill pairs could make performance appear artificially high even when relevant skills are missed. Precision and recall on their own were also insufficient. Optimising only precision would make the model too cautious and cause it to miss relevant skills, while optimising only recall would make it predict too many irrelevant skills. Micro-F1 was therefore used to balance both objectives. It was preferred over macro-F1 as the main tuning objective because the validation set was relatively small, making macro-averaged scores more unstable and sensitive to rare skills with very low support.
+
+The final set of hyperparameters for each model variant was chosen by tuning on the **training set** and comparing the best-performing configuration on the **validation set**. Specifically, the best variant from each of the four experimental setups
+
+1. cosine similarity \+ threshold,  
+2. cosine similarity \+ top-k,  
+3. logistic regression \+ threshold  
+4. logistic regression \+ top-k
+
+was evaluated on the validation set. The model with the highest **validation micro-F1** was selected as the final model for subsequent testing.
 
 ## Section 4: Findings
 
