@@ -159,7 +159,7 @@ As shown in the screenshots, the chatbot can generate **interpretable course-ski
 
 ![Chatbot output](images/image_1.png)
 
-It also displays a **sidebar table providing the latest labour-market and related course data** that can be expanded for further review. The user can then ask the chatbot if they want more information regarding the details.
+It also displays a **skills-gap table in the sidebar providing the latest labour-market and related course data** that can be expanded for further review. The user can then ask the chatbot if they want more information regarding the details.
 
 ![Sidebar table](images/image_2.jpg)
 
