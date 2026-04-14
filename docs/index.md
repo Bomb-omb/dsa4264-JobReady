@@ -1,4 +1,4 @@
-# Assess how well university courses are preparing students today for the job market
+# A Data-Driven Framework for Identifying Curriculum–Industry Skill Gaps
 
 By Alvis Low Yue Han, Lam Jian Yi Eugene, Lee Tze Ning, Ryan Toh Jun Hui, Yap Yi Pin
 
@@ -34,11 +34,11 @@ In contrast, Natural Language Processing (NLP) models identify skill-related phr
 
 If this project is successful, it should achieve two key goals for MOE.
 
-**Operational Goal 1:**
+**Operational Goal:**
 
 Create a system that can process new data and reduce the time required for course-to-job skill mapping by at least 75% compared with the current manual review process. This can be evaluated through User Acceptance Testing (UAT) by comparing the time taken for officers to complete the same review task manually versus with the system.
 
-**Business Goal 1:**
+**Business Goal:**
 
 Enable policy officers to identify curriculum gaps and emerging skill demands in a more timely and convenient manner by providing a user-friendly natural language interface for querying latest labour-market and course data. 
 
@@ -50,7 +50,7 @@ First, skills stated in job advertisements are genuine employer demand rather th
 
 Second, course descriptions and learning outcomes obtained from the NUSMods API accurately reflect current teaching content. 
 
-Third, skills taxonomy is sufficiently up to date and comprehensive for mapping both job and course content. 
+Third, skills taxonomy is sufficiently up-to-date and comprehensive for mapping both job and course content. 
 
 Fourth, there will be sufficient manpower with domain expertise to label the skills for jobs and courses that are currently available correctly, if implemented at scale. 
 
@@ -156,8 +156,6 @@ Micro F1-score places greater weight on skills that appear more frequently in th
 We also built a **prototype chatbot** on top of the final model. The chatbot currently runs locally to support the operational and business goals.
 
 As shown in the screenshots, the chatbot can generate **interpretable course-skill-job matching outputs**. 
-
-As shown in the screenshots, the chatbot can generate **interpretable course-skill-job matching outputs**.
 
 ![Chatbot output](images/image_1.png)
 
