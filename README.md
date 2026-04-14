@@ -47,7 +47,7 @@ This project also uses an `embedding/` folder to store vector embeddings pf jobs
 
 `extract_prereq_courses.py` enriches the cleaned NUS module dataset with prerequisite course codes by querying the per-module NUSMods API. It fetches prerequisite trees then outputs `data/2025-2026_module_clean_with_prereq.csv`.
 
-`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using `extract_skillsfuture_course.py`](#using-extract_skillsfuture_coursepy)
+`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using extract_skillsfuture_course.py](#using-extract_skillsfuture_coursepy)
 
 ## `check_extraction_(courses).ipynb`
 
@@ -64,7 +64,7 @@ Lastly, records that courses with descriptions under 20 words or marked `Not App
 
 `extract_mcf_fields.py` converts raw MyCareersFuture JSON job-posting files from `data/raw/mcf_data/` into a cleaned tabular dataset at `data/mcf_clean_data.csv`. The script cleans HTML and encoding issues, standardizes text fields, and extracts minimum years of experience.
 
-`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using `extract_skillsfuture(jd).py`](#using-extract_skillsfuturejdpy)
+`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using extract_skillsfuture(jd).py](#using-extract_skillsfuturejdpy)
 
 ### `mcf_entrylevel.ipynb`
 
