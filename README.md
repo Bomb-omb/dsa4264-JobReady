@@ -34,9 +34,6 @@ How each file is derived is explained in later sections of this README.
 - `data/acc/skills_taxo_acc.csv`: accounting-only filtered skills taxonomy
 
 
-Some scripts also expect temporary or user-generated files in `data/`, for example ad-hoc CSVs
-passed with `--input-file` and `*.backup.csv` files created before overwrite runs.
-
 ## Embedding Folder Note
 
 This project also uses an `embedding/` folder to store vector embeddings pf jobs/courses/skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
@@ -50,7 +47,7 @@ This project also uses an `embedding/` folder to store vector embeddings pf jobs
 
 `extract_prereq_courses.py` enriches the cleaned NUS module dataset with prerequisite course codes by querying the per-module NUSMods API. It fetches prerequisite trees then outputs `data/2025-2026_module_clean_with_prereq.csv`.
 
-`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using `extract_skillsfuture_course.py`](## Using `extract_skillsfuture_course.py`)
+`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using `extract_skillsfuture_course.py`](##Using `extract_skillsfuture_course.py`)
 
 ## `check_extraction_(courses).ipynb`
 
@@ -67,7 +64,7 @@ Lastly, records that courses with descriptions under 20 words or marked `Not App
 
 `extract_mcf_fields.py` converts raw MyCareersFuture JSON job-posting files from `data/raw/mcf_data/` into a cleaned tabular dataset at `data/mcf_clean_data.csv`. The script cleans HTML and encoding issues, standardizes text fields, and extracts minimum years of experience.
 
-`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using `extract_skillsfuture(jd).py`](## Using `extract_skillsfuture(jd).py`)
+`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using `extract_skillsfuture(jd).py`](##Using `extract_skillsfuture(jd).py`)
 
 ### `mcf_entrylevel.ipynb`
 
