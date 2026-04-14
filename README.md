@@ -2,9 +2,11 @@
 
 The technical report is [here](https://bomb-omb.github.io/dsa4264-JobReady/)
 
-## Data Folder Note
+## Embedding and Data Folder Note
 
 This project references a `data/` folder throughout the scripts and notebooks, but that folder has been  removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `data/` in the code.
+
+This project also uses an `embedding/` folder to store vector embeddings of jobs, courses&skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
 
 The main files and subfolders the code expects are:
 
@@ -35,13 +37,7 @@ How each file is derived is explained in later sections of this README.
 - `data/acc/acc_courses.csv`: accounting-focused course subset 
 - `data/acc/skills_taxo_acc.csv`: accounting-only filtered skills taxonomy
 
-
-## Embedding Folder Note
-
-This project also uses an `embedding/` folder to store vector embeddings of jobs, courses&skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
-
 ## How was the course data derived?
-
 
 `retrieve_nusmods.py` downloads the raw NUSMods module catalogue for academic year `2025-2026` from the public NUSMods API and saves it to `data/raw/nusmods/2025-2026_moduleInfo.json`. This is the first data-ingestion step for the NUS course pipeline.
 
@@ -84,6 +80,9 @@ After review some courses and jobs using the 2 notebooks mentioned above, the gr
 
 `filter_acc_skills.py` creates an accounting-focused SkillsFuture taxonomy by filtering the broader skills taxonomy using the SkillsFuture sector mapping file. It keeps skills associated with the `Accountancy` and `Financial Services` sectors and saves the result to `data/acc/skills_taxo_acc.csv`.
 
+## Embeddings
+
+`build_embeddings.py` builds the embedding files used by the model notebooks and the Streamlit app. It reads the cleaned job, course, and skill datasets, generates local sentence embeddings, assigns train/validation/test splits, and writes the JSONL outputs under `embedding/`.
 
 ## `Model` folder
 
@@ -92,6 +91,16 @@ After review some courses and jobs using the 2 notebooks mentioned above, the gr
 `model/cosine_sim_thres.ipynb` is the exploratory notebook used to develop and compare these thresholding approaches. It starts with a jobs-only version of the cosine-similarity model, documents the threshold-selection logic step by step, and compares the performance of global-threshold, common-skill, and greedy threshold tuning. It then extends the setup to a combined jobs-plus-courses dataset, shows that using a single shared thresholding scheme across both entity types reduces performance, and introduces a two-part model that learns separate thresholds for jobs and courses. The notebook also tests different numbers of greedy optimization rounds and evaluates all learned thresholding strategies on a validation split. In the recorded notebook run, the two-part greedy model with 2 greedy rounds gave the best overall validation performance among the tested variants.
 
 `model/cosine_sim_two_part.py` implements the cosine-similarity skill prediction pipeline. It loads job/course labels and embeddings, computes similarity between entities and skill embeddings, and compares several thresholding strategies: a global threshold, skill-specific thresholds for common skills, greedy per-skill tuning for better micro-F1, and a two-part version with separate thresholds for jobs and courses. It also provides evaluation utilities that output metrics, learned thresholds, and predicted skills.
+
+### Cosine Similarity Top K Model
+
+
+
+### One-vs-Rest (OvR) Threshold Model
+
+`model/ovr_logreg_thres.ipynb` is the exploratory notebook used to develop and compare the one-vs-rest logistic regression threshold model. It builds the project-required jobs-plus-courses dataset, trains one logistic regression classifier per skill, and compares a single global probability threshold against skill-specific thresholds tuned on the validation split. The notebook then selects the final configuration using validation performance, reports the locked held-out test metrics, and uses the selected model to build the skills gap table that links predicted job demand to curriculum coverage. In the recorded notebook run, the `jobs_plus_courses + global` threshold configuration gave the best overall validation performance among the tested variants.
+
+### One-vs-Rest (OvR) Top K Model
 
 
 
