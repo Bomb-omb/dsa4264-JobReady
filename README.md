@@ -30,7 +30,7 @@ How each file is derived is explained in later sections of this README.
 ### Cleaned Skills Taxonomy
 - `data/skills_taxo.csv`: SkillsFuture skills taxonomy 
 
-### Accountouncy dataset
+### Accountancy dataset
 - `data/acc/audit_tax_accounting_jobs.csv`: accounting-focused jobs dataset 
 - `data/acc/acc_courses.csv`: accounting-focused course subset 
 - `data/acc/skills_taxo_acc.csv`: accounting-only filtered skills taxonomy
