@@ -47,7 +47,7 @@ This project also uses an `embedding/` folder to store vector embeddings pf jobs
 
 `extract_prereq_courses.py` enriches the cleaned NUS module dataset with prerequisite course codes by querying the per-module NUSMods API. It fetches prerequisite trees then outputs `data/2025-2026_module_clean_with_prereq.csv`.
 
-`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using `extract_skillsfuture_course.py`](##Using `extract_skillsfuture_course.py`)
+`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using `extract_skillsfuture_course.py`](#using-extract_skillsfuture_coursepy)
 
 ## `check_extraction_(courses).ipynb`
 
@@ -64,7 +64,7 @@ Lastly, records that courses with descriptions under 20 words or marked `Not App
 
 `extract_mcf_fields.py` converts raw MyCareersFuture JSON job-posting files from `data/raw/mcf_data/` into a cleaned tabular dataset at `data/mcf_clean_data.csv`. The script cleans HTML and encoding issues, standardizes text fields, and extracts minimum years of experience.
 
-`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using `extract_skillsfuture(jd).py`](##Using `extract_skillsfuture(jd).py`)
+`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using `extract_skillsfuture(jd).py`](#using-extract_skillsfuturejdpy)
 
 ### `mcf_entrylevel.ipynb`
 
@@ -74,7 +74,7 @@ The notebook then reviews missing extracted skills and tools in `data/mcf_entryl
 
 To improve consistency, it also builds a SkillsFuture-based skill taxonomy file (`data/skills_taxo.csv`) and normalizes the extracted skills against that taxonomy, including fixing cases where multi-word skills were incorrectly split by delimiters. After the final cleanup, the skill labels align with the taxonomy.
 
-After review some courses and jobs using the 2 notebooks (`mcf_entrylevel.ipynb` & `check_extraction_(courses).ipynb`) mentioned above, the group realised that there is too many courses and jobs to clean up so we decided to focus only on the accountancy related jobs & courses.
+After review some courses and jobs using the 2 notebooks mentioned above, the group realised that there is too many courses and jobs to clean up so we decided to focus only on the accountancy related jobs & courses.
 
 ## Accountancy subset
 
