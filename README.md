@@ -41,10 +41,60 @@ passed with `--input-file` and `*.backup.csv` files created before overwrite run
 
 This project also uses an `embedding/` folder to store vector embeddings pf jobs/courses/skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
 
+## How was the course data derived?
 
-## `mcf_entrylevel.ipynb`
 
-`mcf_entrylevel.ipynb` prepares the entry-level subset of the MCF job postings dataset for downstream analysis. It starts from `data/mcf_clean_data.csv` with 22,719 cleaned postings, filters for roles that mention bachelor-level education keywords and are either fresh/junior roles or require fewer than 4 years of experience, and produces an initial set of 1,589 candidate jobs. The notebook then reviews missing extracted skills and tools in `data/mcf_entrylevel.csv`, applies a few manual fixes, removes two unsuitable records, cleans leftover emoji noise from titles and descriptions, and saves the final output to `data/mcf_entrylevel.csv` with 1,587 entry-level postings. To improve consistency, it also builds a SkillsFuture-based skill taxonomy file (`data/skills_taxo.csv`) and normalizes the extracted skills against that taxonomy, including fixing cases where multi-word skills were incorrectly split by delimiters. After the final cleanup, the skill labels align with the taxonomy.
+`retrieve_nusmods.py` downloads the raw NUSMods module catalogue for academic year `2025-2026` from the public NUSMods API and saves it to `data/raw/nusmods/2025-2026_moduleInfo.json`. This is the first data-ingestion step for the NUS course pipeline.
+
+`filter_and_extract_module.py` cleans and filters the raw NUSMods module export into a smaller course dataset containing only `moduleCode`, `title`, and `description`. It removes general education modules, internship modules, exchange-style records, selected faculties and departments, and modules at the 5000 level or above, then writes the result to `data/2025-2026_moduleInfo_clean.csv`.
+
+`extract_prereq_courses.py` enriches the cleaned NUS module dataset with prerequisite course codes by querying the per-module NUSMods API. It fetches prerequisite trees then outputs `data/2025-2026_module_clean_with_prereq.csv`.
+
+`extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using `extract_skillsfuture_course.py`](## Using `extract_skillsfuture_course.py`)
+
+## `check_extraction_(courses).ipynb`
+
+`check_extraction_(courses).ipynb` is a QA and cleanup notebook for the course extraction output in `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. It validates `extracted_skills` against the SkillsFuture taxonomy in `data/skills_taxo.csv`, identifies unmatched skill names, replaces partial/truncated matches with the correct taxonomy labels where possible, removes invalid leftovers, and confirms that no unmatched skills remain after cleaning. 
+
+The notebook also audits courses with missing `extracted_skills` and `extracted_apps_tools`, checks the `done` status column to diagnose extraction failures, resets rows affected by a known extraction bug back to `pending` for reruns, and samples the remaining blank rows to estimate residual extraction error. 
+
+In addition, it contains manual review and removal of some skills that were falsely included by the SkillsFuture tools based on the description. 
+ 
+Lastly, records that courses with descriptions under 20 words or marked `Not Applicable` were removed outside the notebook because they are below the minimum description length recommended for SkillsFuture extraction.
+
+## How was the jobs data derived?
+### `extract_mcf_fields.py`
+
+`extract_mcf_fields.py` converts raw MyCareersFuture JSON job-posting files from `data/raw/mcf_data/` into a cleaned tabular dataset at `data/mcf_clean_data.csv`. The script cleans HTML and encoding issues, standardizes text fields, and extracts minimum years of experience.
+
+`extract_skillsfuture(jd).py` automates the SkillsFuture skills extractions for the jobs in `data/mcf_entrylevel.csv` and edited the csv in-place. The instructions to run it can be found under [Using `extract_skillsfuture(jd).py`](## Using `extract_skillsfuture(jd).py`)
+
+### `mcf_entrylevel.ipynb`
+
+`mcf_entrylevel.ipynb` prepares the entry-level subset of the MCF job postings dataset for downstream analysis. It starts from `data/mcf_clean_data.csv` with 22,719 cleaned postings, filters for roles that mention bachelor-level education keywords and are either fresh/junior roles or require fewer than 4 years of experience, and produces an initial set of 1,589 candidate jobs into `data/mcf_clean_data.csv`. 
+
+The notebook then reviews missing extracted skills and tools in `data/mcf_entrylevel.csv`, applies a few manual fixes, removes two unsuitable records, cleans leftover emoji noise from titles and descriptions, and saves the final output to `data/mcf_entrylevel.csv` with 1,587 entry-level postings. 
+
+To improve consistency, it also builds a SkillsFuture-based skill taxonomy file (`data/skills_taxo.csv`) and normalizes the extracted skills against that taxonomy, including fixing cases where multi-word skills were incorrectly split by delimiters. After the final cleanup, the skill labels align with the taxonomy.
+
+After review some courses and jobs using the 2 notebooks (`mcf_entrylevel.ipynb` & `check_extraction_(courses).ipynb`) mentioned above, the group realised that there is too many courses and jobs to clean up so we decided to focus only on the accountancy related jobs & courses.
+
+## Accountancy subset
+
+`extract_mcf_audit_tax_accounting_roles.py` filters `data/mcf_entrylevel.csv` to keep only audit, tax, and accounting-related roles. It uses rule-based keyword matching on job titles, job categories, and job descriptions, then saves the accounting-focused subset to `data/acc/audit_tax_accounting_jobs.csv`.
+
+`filter_acc_skills.py` creates an accounting-focused SkillsFuture taxonomy by filtering the broader skills taxonomy using the SkillsFuture sector mapping file. It keeps skills associated with the `Accountancy` and `Financial Services` sectors and saves the result to `data/acc/skills_taxo_acc.csv`.
+
+
+## `Model` folder
+
+### Cosine Similarity Threshold Model
+
+`model/cosine_sim_thres.ipynb` is the exploratory notebook used to develop and compare these thresholding approaches. It starts with a jobs-only version of the cosine-similarity model, documents the threshold-selection logic step by step, and compares the performance of global-threshold, common-skill, and greedy threshold tuning. It then extends the setup to a combined jobs-plus-courses dataset, shows that using a single shared thresholding scheme across both entity types reduces performance, and introduces a two-part model that learns separate thresholds for jobs and courses. The notebook also tests different numbers of greedy optimization rounds and evaluates all learned thresholding strategies on a validation split. In the recorded notebook run, the two-part greedy model with 2 greedy rounds gave the best overall validation performance among the tested variants.
+
+`model/cosine_sim_two_part.py` implements the cosine-similarity skill prediction pipeline. It loads job/course labels and embeddings, computes similarity between entities and skill embeddings, and compares several thresholding strategies: a global threshold, skill-specific thresholds for common skills, greedy per-skill tuning for better micro-F1, and a two-part version with separate thresholds for jobs and courses. It also provides evaluation utilities that output metrics, learned thresholds, and predicted skills.
+
+
 
 ## Using `extract_skillsfuture(jd).py`
 
