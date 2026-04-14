@@ -1,5 +1,7 @@
 # dsa4264-JobReady
 
+The technical report is [here](https://bomb-omb.github.io/dsa4264-JobReady/)
+
 ## Data Folder Note
 
 This project references a `data/` folder throughout the scripts and notebooks, but that folder has been  removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `data/` in the code.
@@ -36,7 +38,7 @@ How each file is derived is explained in later sections of this README.
 
 ## Embedding Folder Note
 
-This project also uses an `embedding/` folder to store vector embeddings pf jobs/courses/skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
+This project also uses an `embedding/` folder to store vector embeddings of jobs, courses&skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
 
 ## How was the course data derived?
 
