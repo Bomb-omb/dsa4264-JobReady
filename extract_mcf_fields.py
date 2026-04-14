@@ -1,3 +1,9 @@
+# Known limitation:
+# `clean_text()` unescapes HTML entities and then strips `<...>` with a regex,
+# so literal angle-bracketed text like `<12 months contract>` can be removed.
+# This is currently treated as non-severe for this pipeline because the lost
+# snippets are peripheral metadata, not the main job scope / responsibility text
+# used downstream.
 from __future__ import annotations
 
 import csv

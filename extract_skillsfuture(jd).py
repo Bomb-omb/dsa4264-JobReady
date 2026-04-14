@@ -23,7 +23,7 @@ except ModuleNotFoundError:
     pyperclip = None
 
 
-DEFAULT_INPUT_FILE = "data/jd2.csv"
+DEFAULT_INPUT_FILE = "data/mcf_entrylevel.csv"
 DEFAULT_ID_COLUMN = "uuid"
 DEFAULT_TEXT_COLUMN = "description"
 DEFAULT_OUTPUT_COLUMN = "extracted_skills"
@@ -56,7 +56,7 @@ CMD_KEY = "command" if SYSTEM == "Darwin" else "ctrl"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Automate SkillsFuture extraction from a CSV of descriptions."
+        description="Automate SkillsFuture extraction from a CSV of job descriptions."
     )
     parser.add_argument("--input-file", default=DEFAULT_INPUT_FILE)
     parser.add_argument("--id-column", default=DEFAULT_ID_COLUMN)
@@ -65,7 +65,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--apps-tools-column", default=DEFAULT_APPS_TOOLS_COLUMN)
     parser.add_argument("--status-column", default=DEFAULT_STATUS_COLUMN)
     parser.add_argument("--row-index", type=int)
-    parser.add_argument("--in-place", action="store_true")
     parser.add_argument("--force", action="store_true")
     return parser.parse_args()
 
@@ -147,12 +146,6 @@ def normalize_dataframe(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFr
     return normalized
 
 
-def build_output_path(input_path: Path, in_place: bool) -> Path:
-    if in_place:
-        return input_path
-    return input_path.with_name(f"{input_path.stem}.updated{input_path.suffix}")
-
-
 def build_backup_path(input_path: Path) -> Path:
     return input_path.with_name(f"{input_path.stem}.backup{input_path.suffix}")
 
@@ -169,12 +162,9 @@ def ensure_backup(input_path: Path) -> None:
 def save_dataframe(
     df: pd.DataFrame,
     input_path: Path,
-    output_path: Path,
-    in_place: bool,
 ) -> None:
-    if in_place:
-        ensure_backup(input_path)
-    df.to_csv(output_path, index=False)
+    ensure_backup(input_path)
+    df.to_csv(input_path, index=False)
 
 
 def format_identifier(value: object) -> str:
@@ -186,12 +176,10 @@ def format_identifier(value: object) -> str:
 def print_resolved_config(
     args: argparse.Namespace,
     input_path: Path,
-    output_path: Path,
     df: pd.DataFrame,
 ) -> None:
     unique_count = df[args.text_column].nunique(dropna=False)
     row_mode = args.row_index if args.row_index is not None else "all"
-    write_mode = "in-place" if args.in_place else "copy"
 
     print(f"Running on: {SYSTEM}")
     print("Resolved config:")
@@ -202,12 +190,11 @@ def print_resolved_config(
     print(f"  apps_tools_column: {args.apps_tools_column}")
     print(f"  status_column: {args.status_column}")
     print(f"  row_index: {row_mode}")
-    print(f"  write_mode: {write_mode}")
-    print(f"  output_path: {output_path}")
+    print("  write_mode: in-place")
+    print(f"  output_path: {input_path}")
     print(f"  total_rows: {len(df)}")
     print(f"  unique_text_rows: {unique_count}")
-    if args.in_place:
-        print(f"  backup_path: {build_backup_path(input_path)}")
+    print(f"  backup_path: {build_backup_path(input_path)}")
 
 
 def manual_pause() -> None:
@@ -441,7 +428,6 @@ def process_single_row(
     df: pd.DataFrame,
     args: argparse.Namespace,
     input_path: Path,
-    output_path: Path,
 ) -> None:
     if args.row_index is None:
         raise ValueError("row_index must be provided for single-row processing.")
@@ -473,15 +459,14 @@ def process_single_row(
     else:
         df.at[row_label, args.status_column] = f"error: {error_message}"
 
-    save_dataframe(df, input_path, output_path, args.in_place)
-    print(f"Saved output to: {output_path}")
+    save_dataframe(df, input_path)
+    print(f"Saved output to: {input_path}")
 
 
 def process_all_unique_rows(
     df: pd.DataFrame,
     args: argparse.Namespace,
     input_path: Path,
-    output_path: Path,
 ) -> None:
     unique_df = df[
         [
@@ -523,16 +508,15 @@ def process_all_unique_rows(
         df.loc[:, args.apps_tools_column] = updated_full_df[args.apps_tools_column]
         df.loc[:, args.status_column] = updated_full_df[args.status_column]
 
-        save_dataframe(df, input_path, output_path, args.in_place)
+        save_dataframe(df, input_path)
 
-    print(f"Saved output to: {output_path}")
+    print(f"Saved output to: {input_path}")
 
 
 def main() -> None:
     args = parse_args()
 
     input_path = Path(args.input_file)
-    output_path = build_output_path(input_path, args.in_place)
 
     validate_input_path(input_path)
 
@@ -541,16 +525,16 @@ def main() -> None:
     validate_columns(df, args)
     df = normalize_dataframe(df, args)
 
-    print_resolved_config(args, input_path, output_path, df)
+    print_resolved_config(args, input_path, df)
     require_runtime_dependencies()
 
     print("Starting in 3 seconds. Keep the browser fixed and do not touch the mouse or keyboard.")
     time.sleep(3)
 
     if args.row_index is not None:
-        process_single_row(df, args, input_path, output_path)
+        process_single_row(df, args, input_path)
     else:
-        process_all_unique_rows(df, args, input_path, output_path)
+        process_all_unique_rows(df, args, input_path)
 
 
 if __name__ == "__main__":

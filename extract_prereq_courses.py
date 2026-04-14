@@ -1,3 +1,11 @@
+#
+# Known limitation: if the NUSMods API returns a malformed/truncated JSON payload
+# while still succeeding at the HTTP layer, `json.load(response)` can raise
+# `json.JSONDecodeError` and abort the batch because that case is not retried explicitly . 
+# we assume the # API behaved as expected and returned valid JSON responses, so this failure path
+# was not triggered and did not affect the generated prerequisite output.
+# the prerequisite extracted was not used for downward analysis anyways
+#
 import argparse
 import csv
 import json

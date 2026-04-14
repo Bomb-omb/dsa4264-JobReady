@@ -1,3 +1,11 @@
+"""Heuristic filter for audit, tax, and accounting roles.
+
+We tried different title, category, and description signals we could think of
+to detect relevant positions. Even so, job descriptions are free text and can
+vary widely in wording and punctuation, so this script may still miss some
+relevant roles or include borderline matches.
+"""
+
 from __future__ import annotations
 
 import argparse

@@ -1,20 +1,77 @@
 # dsa4264-JobReady
 
+## Data Folder Note
+
+This project references a `data/` folder throughout the scripts and notebooks, but that folder has been  removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `data/` in the code.
+
+The main files and subfolders the code expects are:
+
+### Raw data
+- `data/raw/nusmods/`: raw NUSMods JSON exports used to build the module datasets
+- `data/raw/mcf_data/`: raw MyCareersFuture job-posting JSON files
+- `data/raw/jobsandskills-skillsfuture-unique-skills-list.xlsx`: raw SkillsFuture unique-skills source file
+- `data/raw/jobsandskills-skillsfuture-tsc-to-unique-skills-mapping.xlsx`: raw SkillsFuture sector mapping file
+
+### Module data
+- `data/2025-2026_moduleInfo_clean.csv`: broader cleaned module dataset
+- `data/2025-2026_module_clean_with_prereq.csv`: cleaned NUS module dataset before SkillsFuture extraction
+- `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`: module dataset after SkillsFuture skill extraction
+
+These three files are part of a derivation chain:
+`data/2025-2026_module_clean_with_prereq.csv` -> `data/2025-2026_moduleInfo_clean.csv` -> `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`
+How each file is derived is explained in later sections of this README.
+
+### Jobs Data
+- `data/mcf_clean_data.csv`: intermediate cleaned MyCareersFuture job dataset
+- `data/mcf_entrylevel.csv`: filtered entry-level jobs dataset derived from `data/mcf_clean_data.csv` and added skills from SkillsFuture
+
+### Cleaned Skills Taxonomy
+- `data/skills_taxo.csv`: SkillsFuture skills taxonomy 
+
+### Accountouncy dataset
+- `data/acc/audit_tax_accounting_jobs.csv`: accounting-focused jobs dataset 
+- `data/acc/acc_courses.csv`: accounting-focused course subset 
+- `data/acc/skills_taxo_acc.csv`: accounting-only filtered skills taxonomy
+
+
+Some scripts also expect temporary or user-generated files in `data/`, for example ad-hoc CSVs
+passed with `--input-file` and `*.backup.csv` files created before overwrite runs.
+
+## Embedding Folder Note
+
+This project also uses an `embedding/` folder to store vector embeddings pf jobs/courses/skills description. The folder has been removed to satisfy submission requirements. This note is here so readers are not confused when they see paths under `embedding/` in the code.
+
+
+## `mcf_entrylevel.ipynb`
+
+`mcf_entrylevel.ipynb` prepares the entry-level subset of the MCF job postings dataset for downstream analysis. It starts from `data/mcf_clean_data.csv` with 22,719 cleaned postings, filters for roles that mention bachelor-level education keywords and are either fresh/junior roles or require fewer than 4 years of experience, and produces an initial set of 1,589 candidate jobs. The notebook then reviews missing extracted skills and tools in `data/mcf_entrylevel.csv`, applies a few manual fixes, removes two unsuitable records, cleans leftover emoji noise from titles and descriptions, and saves the final output to `data/mcf_entrylevel.csv` with 1,587 entry-level postings. To improve consistency, it also builds a SkillsFuture-based skill taxonomy file (`data/skills_taxo.csv`) and normalizes the extracted skills against that taxonomy, including fixing cases where multi-word skills were incorrectly split by delimiters. After the final cleanup, the skill labels align with the taxonomy.
+
 ## Using `extract_skillsfuture(jd).py`
 
 `extract_skillsfuture(jd).py` automates the SkillsFuture Skills Extraction & Comparison Tool with `pyautogui`.
 It reads job descriptions from a CSV, pastes them into the website, downloads both result tabs, and writes the extracted values back into the CSV.
 
+### Default target
+
+By default, the script reads and updates the MyCareersFuture entry-level jobs file:
+
+- input file: `data/mcf_entrylevel.csv`
+- id column: `uuid`
+- text column: `description`
+- output column: `extracted_skills`
+- apps/tools column: `extracted_apps_tools`
+- status column: `done`
+
+Before the first overwrite, it creates a one-time backup at `data/mcf_entrylevel.backup.csv`.
+
 ### What it updates
 
-For `data/jd2.csv`, the script uses:
+For `data/mcf_entrylevel.csv`, the script uses:
 
 - `description` as the input text
 - `extracted_skills` for the Skills tab output
 - `extracted_apps_tools` for the Apps & Tools tab output
 - `done` for the shared status
-
-When running in place, it also creates a one-time backup at `data/jd2.backup.csv`.
 
 ### Install dependencies
 
@@ -44,42 +101,50 @@ The current screen positions are stored in:
 
 If the website layout changes or the clicks miss the controls, update those coordinates in `extract_skillsfuture(jd).py`.
 
-### Test on the first row of `jd2.csv`
+### Test on the first row of `mcf_entrylevel.csv`
 
 Use this first before a full run:
 
 ```powershell
-python extract_skillsfuture.py --input-file data/jd2.csv --id-column uuid --text-column description --output-column extracted_skills --status-column done --row-index 0 --in-place --force
+python "extract_skillsfuture(jd).py" --row-index 0 --force
 ```
 
 Expected result:
 
-- row `0` in `data/jd2.csv` is updated
+- row `0` in `data/mcf_entrylevel.csv` is updated
 - `extracted_skills` contains the Skills tab output
 - `extracted_apps_tools` contains the Apps & Tools tab output
 - `done` becomes `success` only if both tab downloads succeed
 
-### Run the full `jd2.csv`
+### Run the full `mcf_entrylevel.csv`
 
 ```powershell
-python extract_skillsfuture.py --input-file data/jd2.csv --id-column uuid --text-column description --output-column extracted_skills --status-column done --in-place
+python "extract_skillsfuture(jd).py"
 ```
 
 Behavior:
 
+- the script always updates the input CSV in place, including custom files passed with `--input-file`
 - duplicate descriptions are processed once and mapped back to matching rows
 - rows already marked `success` are skipped unless `--force` is used
 - partial results are preserved if one tab succeeds and the other fails
 - `done` is written as `error: ...` if the row does not complete successfully
 
+If you want to run the same workflow on a different CSV, override the defaults explicitly:
+
+```powershell
+python "extract_skillsfuture(jd).py" --input-file data/custom_jobs.csv --id-column uuid --text-column description
+```
+
 ### Notes
 
 - The script removes `; Tags: ...` suffixes from downloaded values before saving them.
 - `Apps & Tools` is treated as a valid empty result if the CSV downloads correctly but contains no items.
+- PowerShell examples quote the script name because the filename contains parentheses.
 - If you want to inspect the available flags:
 
 ```powershell
-python extract_skillsfuture.py --help
+python "extract_skillsfuture(jd).py" --help
 ```
 
 ## Using `extract_skillsfuture_course.py`
@@ -118,8 +183,7 @@ Expected result:
 
 ### Run the next pending batch
 
-Use this to continue from the first row whose `done` value is `pending` and update only a bounded
-number of physical rows:
+Use this to continue from the first row whose `done` value is `pending` and update only a bounded number of physical rows:
 
 ```powershell
 python extract_skillsfuture_course.py --row-count 10 --output-file data\2025-2026_module_clean_with_prereq_skillsfuture.csv
@@ -136,11 +200,6 @@ Behavior:
 
 If there are no pending rows left, the script exits cleanly without writing anything.
 
-If you want to keep the source CSV untouched, use a separate working file explicitly:
-
-```powershell
-python extract_skillsfuture_course.py --row-count 10 --output-file data/custom_skillsfuture.csv
-```
 
 When `--output-file` is provided:
 
