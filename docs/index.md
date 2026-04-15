@@ -165,6 +165,8 @@ It also displays a **skills-gap table in the sidebar providing the latest labour
 
 ![Expanded sidebar](images/image_3.jpg)
 
+Overall, this project has addressed the business problem partially. The prototype shows that skill-gap detection can be automated and presented in an interpretable way. The chatbot interface also supports the business goal of conveniently querying labour-market and course data. However, we are unable to do the User Acceptance Testing. Additionally, since the prototype is restricted to the accountancy sector, one should not assume that its capability can always be extended to all other disciplines or universities. Therefore, the project demonstrates potential business value, but further testing and experimentation is needed (outlined in section 4.3).
+
 
 ### 4.3 Recommendations
 
