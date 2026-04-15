@@ -93,8 +93,9 @@ After review some courses and jobs using the 2 notebooks mentioned above, the gr
 `model/cosine_sim_two_part.py` implements the cosine-similarity skill prediction pipeline. It loads job/course labels and embeddings, computes similarity between entities and skill embeddings, and compares several thresholding strategies: a global threshold, skill-specific thresholds for common skills, greedy per-skill tuning for better micro-F1, and a two-part version with separate thresholds for jobs and courses. It also provides evaluation utilities that output metrics, learned thresholds, and predicted skills.
 
 ### Cosine Similarity Top K Model
+`model/cosine_topk.ipynb` is the exploratory notebook used to develop and evaluate the cosine-similarity top-k skill prediction approach. It implements a top-k cosine-similarity baseline for multilabel skill prediction.
 
-
+The notebook reuses helper functions from `model/cosine_sim_two_part.py` and compares different values of k to determine how many skills should be predicted for each job. For each candidate k, it evaluates micro- and macro-level precision, recall, and F1 scores, and selects the best-performing k based on validation micro-F1. The notebook also outputs overall evaluation metrics and job-level predicted skills for the best k setting.
 
 ### One-vs-Rest (OvR) Threshold Model
 
