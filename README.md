@@ -103,6 +103,12 @@ The notebook reuses helper functions from `model/cosine_sim_two_part.py` and com
 
 ### One-vs-Rest (OvR) Top K Model
 
+`model/ovr_logreg_topk.ipynb` is the exploratory notebook used to develop and evaluate the one-vs-rest logistic regression top-k model. It trains one binary classifier per skill on the ACC jobs and course embeddings, compares candidate `k` values on validation, and uses the selected `k` to produce top-k skill predictions.
+
+`train_ovr_logreg_topk.py` is the reusable script version of the same pipeline. It loads the entity CSVs and embeddings, fits the per-skill logistic regression models, selects the best `top-k` on the validation split by default, evaluates the held-out test split, and writes the prediction outputs and summary metrics under `embedding/acc/logreg_topk_val/`.
+
+The script also includes `build_final_acc_gap_table`, which refits the classifiers on the full jobs-plus-courses dataset and builds the ACC skills-gap table used in the final analysis.
+
 
 
 ## Using `extract_skillsfuture(jd).py`
