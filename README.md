@@ -47,9 +47,9 @@ How each file is derived is explained in later sections of this README.
 
 `extract_skillsfuture_course.py` automates the SkillsFuture skills extraction for courses in `data/2025-2026_module_clean_with_prereq.csv` to produce `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. The instructions to run it can be found under [Using extract_skillsfuture_course.py](#using-extract_skillsfuture_coursepy)
 
-## `check_extraction_(courses).ipynb`
+### `check_extraction_(courses).ipynb`
 
-`check_extraction_(courses).ipynb` is a QA and cleanup notebook for the course extraction output in `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. It validates `extracted_skills` against the SkillsFuture taxonomy in `data/skills_taxo.csv`, identifies unmatched skill names, replaces partial/truncated matches with the correct taxonomy labels where possible, removes invalid leftovers, and confirms that no unmatched skills remain after cleaning. 
+`check_extraction_(courses).ipynb` is a QA and cleanup notebook for the skills extraction output in `data/2025-2026_module_clean_with_prereq_skillsfuture.csv`. It validates `extracted_skills` against the SkillsFuture taxonomy in `data/skills_taxo.csv`, identifies unmatched skill names, replaces partial/truncated matches with the correct taxonomy labels where possible, removes invalid leftovers, and confirms that no unmatched skills remain after cleaning. 
 
 The notebook also audits courses with missing `extracted_skills` and `extracted_apps_tools`, checks the `done` status column to diagnose extraction failures, resets rows affected by a known extraction bug back to `pending` for reruns, and samples the remaining blank rows to estimate residual extraction error. 
 

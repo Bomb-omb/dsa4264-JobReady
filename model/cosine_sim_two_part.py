@@ -1,3 +1,10 @@
+"""Cosine-similarity threshold models for multilabel skill prediction.
+
+This module loads entity and skill embeddings, turns labeled skills into a
+binary indicator matrix, and evaluates several thresholding strategies on top
+of cosine similarity scores.
+"""
+
 import json
 from pathlib import Path
 
@@ -11,6 +18,7 @@ EPS = 1e-12
 
 
 def parse_skill_list(value):
+    """Parse a pipe-delimited skill string into a deduplicated ordered list."""
     if pd.isna(value):
         return []
     text = str(value).strip()
@@ -28,6 +36,7 @@ def parse_skill_list(value):
 
 
 def load_jsonl(path):
+    """Load a JSONL file into a list of Python dictionaries."""
     records = []
     with Path(path).open("r", encoding="utf-8") as handle:
         for line in handle:
@@ -40,6 +49,7 @@ def load_jsonl(path):
 
 
 def build_indicator_matrix(skill_lists, skill_names):
+    """Convert per-entity skill lists into a multi-hot label matrix."""
     skill_to_idx = {skill: idx for idx, skill in enumerate(skill_names)}
     indicator = np.zeros((len(skill_lists), len(skill_names)), dtype=np.uint8)
 
@@ -52,6 +62,7 @@ def build_indicator_matrix(skill_lists, skill_names):
 
 
 def _safe_div(numerator, denominator):
+    """Divide arrays while returning 0 where the denominator is 0."""
     numerator = np.asarray(numerator, dtype=np.float64)
     denominator = np.asarray(denominator, dtype=np.float64)
     result = np.zeros_like(numerator, dtype=np.float64)
@@ -60,12 +71,14 @@ def _safe_div(numerator, denominator):
 
 
 def _binary_f1(tp, fp, fn):
+    """Compute binary F1 from true/false positive/negative counts."""
     precision = _safe_div(tp, tp + fp)
     recall = _safe_div(tp, tp + fn)
     return _safe_div(2.0 * precision * recall, precision + recall)
 
 
 def _micro_metrics_from_counts(tp, fp, fn):
+    """Compute micro precision/recall/F1 from aggregated counts."""
     precision = float(tp / (tp + fp)) if (tp + fp) else 0.0
     recall = float(tp / (tp + fn)) if (tp + fn) else 0.0
     f1 = float((2.0 * precision * recall) / (precision + recall)) if (precision + recall) else 0.0
@@ -73,6 +86,7 @@ def _micro_metrics_from_counts(tp, fp, fn):
 
 
 def _is_better_candidate(candidate, incumbent):
+    """Compare threshold candidates using the module's global ranking rule."""
     c_f1, c_recall, c_macro_f1, c_threshold = candidate
     i_f1, i_recall, i_macro_f1, i_threshold = incumbent
 
@@ -95,6 +109,7 @@ def _is_better_candidate(candidate, incumbent):
 
 
 def _find_best_global_threshold(similarity, labels):
+    """Search one shared threshold for all skills using global micro-F1."""
     flat_scores = similarity.ravel()
     flat_labels = labels.ravel().astype(bool)
 
@@ -126,6 +141,7 @@ def _find_best_global_threshold(similarity, labels):
 
 
 def _find_best_threshold_for_one_skill(scores, labels, default_threshold):
+    """Tune a single skill threshold against that skill's own F1."""
     candidates = np.unique(scores)
     candidates = np.r_[candidates, scores.max() + 1e-9]
 
@@ -152,6 +168,7 @@ def _find_best_threshold_for_one_skill(scores, labels, default_threshold):
 
 
 def _evaluate_micro_f1_with_thresholds(similarity, labels, thresholds):
+    """Apply per-skill thresholds and return predictions plus cached counts."""
     predictions = similarity >= thresholds[np.newaxis, :]
     positives = labels == 1
 
@@ -185,6 +202,7 @@ def _find_best_threshold_for_one_skill_by_global_micro_f1(
     thresholds,
     skill_idx,
 ):
+    """Try alternate thresholds for one skill while scoring global micro-F1."""
     current_threshold = float(thresholds[skill_idx])
     candidates = np.unique(similarity[:, skill_idx])
     candidates = np.r_[candidates, similarity[:, skill_idx].max() + 1e-9]
@@ -223,6 +241,7 @@ def _greedy_optimize_thresholds_for_micro_f1(
     initial_thresholds,
     max_rounds=3,
 ):
+    """Greedily update one skill at a time when global micro-F1 improves."""
     thresholds = initial_thresholds.astype(np.float32).copy()
     num_skills = similarity.shape[1]
 
@@ -257,6 +276,7 @@ def _greedy_optimize_thresholds_for_micro_f1(
 
 
 def load_labeled_entities_from_embeddings(label_csv, embeddings_jsonl, *, entity_type, entity_id_col, embedding_id_key):
+    """Join entity embeddings with titles and extracted skill labels."""
     labels_df = pd.read_csv(label_csv, usecols=[entity_id_col, "title", "extracted_skills"]).rename(
         columns={entity_id_col: "entity_id", "title": "label_title"}
     )
@@ -291,6 +311,7 @@ def load_labeled_entities_from_embeddings(label_csv, embeddings_jsonl, *, entity
 
 
 def prepare_acc_similarity_problem(entities_df, skill_embeddings_jsonl):
+    """Build cosine-similarity scores and aligned multi-label targets."""
     skill_records = load_jsonl(skill_embeddings_jsonl)
     skill_names = [record["skill_name"] for record in skill_records]
 
@@ -314,6 +335,7 @@ def prepare_acc_similarity_problem(entities_df, skill_embeddings_jsonl):
 
 
 def _build_result_frames(problem, thresholds, predictions, global_threshold, *, dataset_variant, model_variant, metric_extras=None, threshold_extras=None):
+    """Assemble the summary tables used by notebooks and downstream analysis."""
     entities_df = problem["entities_df"]
     skill_names = problem["skill_names"]
     labels = problem["labels"]
@@ -372,6 +394,8 @@ def _build_result_frames(problem, thresholds, predictions, global_threshold, *, 
     if threshold_extras:
         thresholds_data.update(threshold_extras)
 
+    # Convert the boolean prediction matrix back into human-readable skill lists
+    # so notebook outputs can be inspected row by row.
     predicted_skill_lists = [
         [skill_names[idx] for idx, is_on in enumerate(row) if is_on]
         for row in predictions
@@ -395,12 +419,14 @@ def _build_result_frames(problem, thresholds, predictions, global_threshold, *, 
 
 
 def _validate_matching_skill_names(job_problem, course_problem):
+    """Ensure job and course problems share the same skill column order."""
     if job_problem["skill_names"] != course_problem["skill_names"]:
         raise ValueError("Job and course problems do not share the same skill ordering")
     return job_problem["skill_names"]
 
 
 def _build_two_part_combined_problem(job_problem, course_problem):
+    """Combine job and course labels for overall reporting."""
     skill_names = _validate_matching_skill_names(job_problem, course_problem)
     return {
         "entities_df": pd.concat(
@@ -413,6 +439,7 @@ def _build_two_part_combined_problem(job_problem, course_problem):
 
 
 def _fit_two_part_greedy_component(problem, *, dataset_variant, entity_type, max_greedy_rounds):
+    """Fit the greedy threshold model separately for one entity type."""
     similarity = problem["similarity"]
     labels = problem["labels"]
     global_threshold = _find_best_global_threshold(similarity, labels)
@@ -485,6 +512,7 @@ def _align_thresholds_for_entity_type(thresholds_df, skill_names, entity_type):
 
 
 def fit_global_threshold_model(problem, *, dataset_variant):
+    """Fit and evaluate a single threshold shared across all skills."""
     similarity = problem["similarity"]
     labels = problem["labels"]
     global_threshold = _find_best_global_threshold(similarity, labels)
@@ -501,6 +529,7 @@ def fit_global_threshold_model(problem, *, dataset_variant):
 
 
 def fit_common_skill_threshold_model(problem, *, dataset_variant, min_positives_for_skill_tuning=10):
+    """Tune only well-supported skills while falling back to a global threshold."""
     similarity = problem["similarity"]
     labels = problem["labels"]
     global_threshold = _find_best_global_threshold(similarity, labels)
@@ -535,6 +564,7 @@ def fit_common_skill_threshold_model(problem, *, dataset_variant, min_positives_
 
 
 def fit_greedy_threshold_model(problem, *, dataset_variant, max_greedy_rounds=3):
+    """Fit per-skill thresholds with greedy global micro-F1 optimization."""
     similarity = problem["similarity"]
     labels = problem["labels"]
     global_threshold = _find_best_global_threshold(similarity, labels)
@@ -564,6 +594,7 @@ def fit_greedy_threshold_model(problem, *, dataset_variant, max_greedy_rounds=3)
 
 
 def fit_two_part_greedy_threshold_model(job_problem, course_problem, *, dataset_variant, max_greedy_rounds=3):
+    """Fit separate greedy threshold sets for jobs and courses."""
     skill_names = _validate_matching_skill_names(job_problem, course_problem)
 
     job_result = _fit_two_part_greedy_component(
@@ -613,6 +644,7 @@ def fit_two_part_greedy_threshold_model(job_problem, course_problem, *, dataset_
 
 
 def run_all_models_for_dataset(problem, *, dataset_variant, min_positives_for_skill_tuning=10, max_greedy_rounds=3):
+    """Run every single-part thresholding strategy on one dataset variant."""
     return {
         "global_threshold": fit_global_threshold_model(problem, dataset_variant=dataset_variant),
         "common_skill_tuning": fit_common_skill_threshold_model(
@@ -629,6 +661,7 @@ def run_all_models_for_dataset(problem, *, dataset_variant, min_positives_for_sk
 
 
 def evaluate_fixed_threshold_model(problem, *, thresholds_df, dataset_variant, model_variant, global_threshold, metric_extras=None, threshold_extras=None):
+    """Evaluate a pre-learned one-part threshold table on a new dataset."""
     required_columns = {"skill_name", "threshold"}
     missing_columns = required_columns.difference(thresholds_df.columns)
     if missing_columns:
@@ -676,6 +709,7 @@ def evaluate_fixed_threshold_model(problem, *, thresholds_df, dataset_variant, m
 
 
 def evaluate_two_part_fixed_threshold_model(job_problem, course_problem, *, thresholds_df, dataset_variant, model_variant, metric_extras=None, threshold_extras=None):
+    """Evaluate pre-learned job/course threshold tables on new data."""
     required_columns = {"entity_type", "skill_name", "threshold"}
     missing_columns = required_columns.difference(thresholds_df.columns)
     if missing_columns:

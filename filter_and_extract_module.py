@@ -31,17 +31,23 @@ EXCLUDED_DEPARTMENTS = {
     "PharmacyandPharmaceuticalScience",
     "Pharmacology",
 }
+MIN_DESCRIPTION_WORDS = 20
 
 #Remove general education pillar
 EXCLUDED_MODULE_CODE_PATTERN = re.compile(r"^(HS|GE[A-Za-z])")
 
 #remove internship modules because we don't know what students learn during intern
 EXCLUDED_INTERNSHIP_PATTERN = re.compile(r"\binternships?\b", re.IGNORECASE)
+WORD_PATTERN = re.compile(r"\b[\w'-]+\b")
 
 
 def extract_module_number(module_code: str) -> int | None:
     match = re.search(r"(\d+)", module_code)
     return int(match.group(1)) if match else None
+
+
+def count_words(text: str) -> int:
+    return len(WORD_PATTERN.findall(text))
 
 
 def should_keep_module(module: dict) -> bool:
@@ -60,6 +66,11 @@ def should_keep_module(module: dict) -> bool:
     if description.lower() == "not available":
         return False
     if "exchange course" in description.lower():
+        return False
+    
+    ## This remove courses that have description with <20 words
+    ## the description is too short for reader to understand what they are teaching, so remove
+    if count_words(description) < MIN_DESCRIPTION_WORDS:
         return False
 
     module_number = extract_module_number(module_code)
